@@ -1,0 +1,16 @@
+# FastAPI 和 ASGI 服务器
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6  # 文件上传支持
+websockets==12.0  # WebSocket 支持
+
+# DeepSeek-OCR 依赖（继承主项目依赖）
+# 注意：这些依赖应该在主环境中已经安装
+# torch==2.6.0
+# vllm==0.8.5+cu118
+# transformers>=4.51.1
+# pillow>=10.0.0
+
+# 工具库
+python-jose[cryptography]==3.3.0  # JWT 支持（如需认证）
+python-dotenv==1.0.0  # 环境变量管理
