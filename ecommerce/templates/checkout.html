@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - E-Commerce Store{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <h1 class="text-4xl font-bold text-gray-800 mb-8">Checkout</h1>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Checkout Form -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Shipping Information</h2>
+                
+                <form method="POST" action="{{ url_for('checkout') }}">
+                    <div class="mb-6">
+                        <label for="shipping_address" class="block text-gray-700 font-semibold mb-2">
+                            Shipping Address *
+                        </label>
+                        <textarea id="shipping_address" name="shipping_address" required rows="4"
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  placeholder="Enter your complete shipping address including street, city, state, and postal code"></textarea>
+                    </div>
+
+                    <div class="border-t border-gray-200 pt-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Payment Method</h3>
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                            <p class="text-blue-800">
+                                <strong>Demo Mode:</strong> This is a demo checkout. No actual payment will be processed.
+                            </p>
+                        </div>
+                    </div>
+
+                    <button type="submit" 
+                            class="w-full bg-blue-600 text-white py-4 rounded-lg hover:bg-blue-700 transition font-semibold text-lg shadow-lg hover:shadow-xl">
+                        Place Order
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-lg p-6 sticky top-24">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Order Summary</h2>
+                
+                <div class="space-y-4 mb-6">
+                    {% for item in cart_items %}
+                        <div class="flex items-center space-x-3 pb-3 border-b border-gray-200">
+                            <img src="{{ item.product.image }}" alt="{{ item.product.name }}" 
+                                 class="w-16 h-16 object-cover rounded">
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-800 text-sm">{{ item.product.name }}</p>
+                                <p class="text-gray-600 text-xs">Qty: {{ item.quantity }}</p>
+                            </div>
+                            <p class="font-bold text-gray-800">${{ "%.2f"|format(item.product.price * item.quantity) }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="space-y-3 mb-6">
+                    <div class="flex justify-between text-gray-600">
+                        <span>Subtotal</span>
+                        <span class="font-semibold">${{ "%.2f"|format(total) }}</span>
+                    </div>
+                    <div class="flex justify-between text-gray-600">
+                        <span>Shipping</span>
+                        <span class="font-semibold text-green-600">Free</span>
+                    </div>
+                    <div class="flex justify-between text-gray-600">
+                        <span>Tax</span>
+                        <span class="font-semibold">$0.00</span>
+                    </div>
+                    <div class="border-t border-gray-200 pt-3">
+                        <div class="flex justify-between text-xl font-bold text-gray-800">
+                            <span>Total</span>
+                            <span class="text-blue-600">${{ "%.2f"|format(total) }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div class="flex items-center text-green-800">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                        <span class="text-sm font-semibold">Secure Checkout</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
