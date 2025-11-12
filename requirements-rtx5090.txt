@@ -1,0 +1,32 @@
+# Requirements for RTX 5090 (Blackwell architecture - sm_120)
+# Requires CUDA 12.4+ and PyTorch 2.7+
+
+# Core dependencies - PyTorch with CUDA 12.4 support
+# Install with: pip install torch==2.7.0 torchvision==0.22.0 torchaudio==2.7.0 --index-url https://download.pytorch.org/whl/cu124
+# Or use nightly build for latest support:
+# pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu124
+
+# Transformers
+transformers==4.46.3
+tokenizers==0.20.3
+
+# vLLM - Use version 0.8.5 or later with CUDA 12.4
+# Download from: https://github.com/vllm-project/vllm/releases
+# Or install with: pip install vllm==0.8.5+cu124 (if available)
+# Or build from source for RTX 5090 support
+
+# Flash Attention - Must be compiled for sm_120
+# Install with: pip install flash-attn==2.7.3 --no-build-isolation
+# Note: May require building from source for sm_120 support
+# If flash-attn fails, you can disable it by using eager attention
+
+# Document processing
+PyMuPDF
+img2pdf
+
+# Utilities
+einops
+easydict
+addict
+Pillow
+numpy
