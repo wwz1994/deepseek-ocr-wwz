@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Les Principes Stratigraphiques - Sciences de la Terre</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .presentation {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .slide {
+            background: white;
+            border-radius: 15px;
+            padding: 60px;
+            margin: 30px 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #764ba2;
+            font-size: 2.2em;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #667eea;
+            font-size: 1.5em;
+            margin: 25px 0 15px 0;
+        }
+
+        p {
+            line-height: 1.8;
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            line-height: 2;
+            font-size: 1.1em;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .principe {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .exemple {
+            background: #fff9e6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .illustration {
+            background: #f0f0f0;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 25px 0;
+            font-family: monospace;
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .strate {
+            padding: 8px;
+            margin: 3px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .intro {
+            text-align: center;
+            padding: 80px 40px;
+        }
+
+        .subtitle {
+            font-size: 1.5em;
+            color: #555;
+            margin-top: 20px;
+        }
+
+        .important {
+            background: #ffebee;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #e53935;
+            margin: 15px 0;
+        }
+
+        .definition {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+            margin: 15px 0;
+            font-style: italic;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            border-left: 3px solid #667eea;
+            margin: 20px 0;
+        }
+
+        .timeline-item {
+            margin-bottom: 20px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -36px;
+            top: 5px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #667eea;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 30px;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+
+        <!-- Slide 1: Page de titre -->
+        <div class="slide intro">
+            <h1>LES PRINCIPES STRATIGRAPHIQUES</h1>
+            <p class="subtitle">Sciences de la Vie et de la Terre</p>
+            <p class="subtitle" style="font-size: 1.2em; margin-top: 40px;">Comprendre l'histoire de la Terre à travers les couches géologiques</p>
+        </div>
+
+        <!-- Slide 2: Introduction -->
+        <div class="slide">
+            <h2>Introduction à la Stratigraphie</h2>
+
+            <div class="definition">
+                <strong>Définition :</strong> La stratigraphie est la branche de la géologie qui étudie les strates (couches) rocheuses et leur succession dans le temps. Elle permet de reconstituer l'histoire géologique de la Terre.
+            </div>
+
+            <h3>Objectifs de la stratigraphie :</h3>
+            <ul>
+                <li>Déterminer l'ordre chronologique des événements géologiques</li>
+                <li>Reconstituer les environnements anciens (paléoenvironnements)</li>
+                <li>Corréler des couches géologiques entre différentes régions</li>
+                <li>Dater les formations rocheuses</li>
+                <li>Comprendre l'évolution de la vie sur Terre</li>
+            </ul>
+
+            <div class="important">
+                <strong>Importance :</strong> Les principes stratigraphiques sont fondamentaux pour comprendre l'histoire de la Terre, localiser les ressources naturelles (pétrole, gaz, minéraux) et étudier les changements climatiques passés.
+            </div>
+        </div>
+
+        <!-- Slide 3: Principe de Superposition -->
+        <div class="slide">
+            <h2>1. Principe de Superposition</h2>
+
+            <div class="principe">
+                <h3>Énoncé du principe (Nicolas Sténon, 1669)</h3>
+                <p><strong>Dans une série de couches sédimentaires non déformées, chaque couche est plus récente que celle qu'elle recouvre et plus ancienne que celle qui la recouvre.</strong></p>
+            </div>
+
+            <h3>Explication :</h3>
+            <p>Les sédiments se déposent horizontalement, couche après couche. La couche du bas est donc la plus ancienne, et la couche du haut est la plus récente.</p>
+
+            <div class="illustration">
+                <div style="background: #8B4513; color: white;" class="strate">Couche E (la plus récente) - 100 Ma</div>
+                <div style="background: #A0522D; color: white;" class="strate">Couche D - 150 Ma</div>
+                <div style="background: #CD853F;" class="strate">Couche C - 200 Ma</div>
+                <div style="background: #DEB887;" class="strate">Couche B - 250 Ma</div>
+                <div style="background: #F4A460;" class="strate">Couche A (la plus ancienne) - 300 Ma</div>
+                <div style="background: #2F4F4F; color: white; margin-top: 10px;" class="strate">Socle rocheux</div>
+            </div>
+
+            <div class="exemple">
+                <strong>Exemple :</strong> Dans le Grand Canyon (Arizona, USA), les couches les plus profondes (schistes de Vishnu) datent de 1,7 milliard d'années, tandis que les couches supérieures (calcaire de Kaibab) datent d'environ 270 millions d'années.
+            </div>
+
+            <h3>Conditions d'application :</h3>
+            <ul>
+                <li>Les couches n'ont pas été renversées par des mouvements tectoniques</li>
+                <li>Les strates sont restées dans leur position initiale</li>
+                <li>Absence de déformation majeure</li>
+            </ul>
+        </div>
+
+        <!-- Slide 4: Principe de Continuité Latérale -->
+        <div class="slide">
+            <h2>2. Principe de Continuité Latérale</h2>
+
+            <div class="principe">
+                <h3>Énoncé du principe (Nicolas Sténon, 1669)</h3>
+                <p><strong>Une couche sédimentaire a la même âge sur toute son étendue. Les couches s'étendent latéralement dans toutes les directions jusqu'à ce qu'elles s'amincissent ou rencontrent un obstacle.</strong></p>
+            </div>
+
+            <h3>Explication :</h3>
+            <p>Lors du dépôt, les sédiments se répartissent sur une surface étendue. Si on trouve la même couche de part et d'autre d'une vallée, on peut supposer qu'elle était continue avant l'érosion.</p>
+
+            <div class="illustration">
+                <pre>
+    Couche continue            →    Érosion crée une vallée    →    Même couche des deux côtés
+
+    ═══════════════════              ═════════╗     ╔═════════        ═════════╗     ╔═════════
+    ───────────────────              ─────────║     ║─────────        ─────────║     ║─────────
+    ═══════════════════              ═════════║     ║═════════        ═════════║     ║═════════
+                                              ║     ║                          ║     ║
+                                              ╚═════╝                          ╚═════╝
+                </pre>
+            </div>
+
+            <div class="exemple">
+                <strong>Exemple :</strong> Les couches de craie blanche du Crétacé que l'on trouve des deux côtés de la Manche (falaises de Douvres en Angleterre et cap Blanc-Nez en France) témoignent d'une continuité latérale avant la formation du détroit.
+            </div>
+
+            <h3>Applications :</h3>
+            <ul>
+                <li>Corrélation de couches entre différents affleurements</li>
+                <li>Reconstitution de paléoenvironnements étendus</li>
+                <li>Cartographie géologique</li>
+            </ul>
+        </div>
+
+        <!-- Slide 5: Principe d'Horizontalité Primaire -->
+        <div class="slide">
+            <h2>3. Principe d'Horizontalité Primaire</h2>
+
+            <div class="principe">
+                <h3>Énoncé du principe (Nicolas Sténon, 1669)</h3>
+                <p><strong>Les couches sédimentaires se déposent initialement à l'horizontale ou sub-horizontale. Toute inclinaison actuelle est le résultat de déformations ultérieures.</strong></p>
+            </div>
+
+            <h3>Explication :</h3>
+            <p>Les particules sédimentaires se déposent sous l'effet de la gravité, perpendiculairement à celle-ci, donc horizontalement. Si les couches sont inclinées ou plissées, c'est qu'elles ont subi des contraintes tectoniques après leur formation.</p>
+
+            <div class="illustration">
+                <pre>
+    DÉPÔT INITIAL (horizontal)          APRÈS DÉFORMATION (incliné/plissé)
+
+    ═══════════════════                      ╱═══════════════
+    ───────────────────                     ╱───────────────
+    ═══════════════════                    ╱═══════════════
+    ───────────────────                   ╱───────────────
+    ═══════════════════                  ╱═══════════════
+                </pre>
+            </div>
+
+            <div class="exemple">
+                <strong>Exemple :</strong> Les plis des Alpes montrent des couches calcaires marines qui étaient initialement horizontales au fond d'un océan. Elles ont été soulevées et plissées lors de la collision entre les plaques africaine et eurasienne.
+            </div>
+
+            <h3>Implications :</h3>
+            <ul>
+                <li>Permet d'identifier les déformations tectoniques</li>
+                <li>Aide à reconstituer l'histoire géologique d'une région</li>
+                <li>Indique l'intensité des forces tectoniques</li>
+            </ul>
+        </div>
+
+        <!-- Slide 6: Principe de Recoupement -->
+        <div class="slide">
+            <h2>4. Principe de Recoupement (ou Intersection)</h2>
+
+            <div class="principe">
+                <h3>Énoncé du principe</h3>
+                <p><strong>Une structure géologique (faille, dyke, intrusion magmatique) qui en recoupe une autre est plus récente que la structure recoupée.</strong></p>
+            </div>
+
+            <h3>Explication :</h3>
+            <p>Pour qu'une structure puisse en recouper une autre, cette dernière doit déjà exister. Le principe s'applique aux intrusions magmatiques, aux failles et à toute structure discontinue.</p>
+
+            <div class="illustration">
+                <pre>
+    STRATES SÉDIMENTAIRES              INTRUSION DE DYKE           FAILLE TARDIVE
+
+    ═══════════════════               ═══════║═══════            ═══════║═══╱═══
+    ───────────────────               ───────║───────            ───────║──╱────
+    ═══════════════════    →          ═══════║═══════    →       ═══════║═╱═════
+    ───────────────────               ───────║───────            ───────║╱──────
+    ═══════════════════               ═══════║═══════            ═══════╱═══════
+                                           (dyke)                    (faille)
+                </pre>
+            </div>
+
+            <div class="exemple">
+                <strong>Exemple :</strong> Un dyke de basalte qui traverse des couches de grès et de calcaire est forcément plus récent que ces roches sédimentaires. Si une faille décale ce dyke, la faille est encore plus récente.
+            </div>
+
+            <h3>Applications :</h3>
+            <ul>
+                <li>Établir la chronologie des événements tectoniques</li>
+                <li>Dater relativement les intrusions magmatiques</li>
+                <li>Comprendre l'histoire de la déformation d'une région</li>
+            </ul>
+        </div>
+
+        <!-- Slide 7: Principe d'Inclusion -->
+        <div class="slide">
+            <h2>5. Principe d'Inclusion (ou Principe des Fragments Inclus)</h2>
+
+            <div class="principe">
+                <h3>Énoncé du principe</h3>
+                <p><strong>Les fragments de roche inclus dans une autre roche sont plus anciens que la roche qui les contient.</strong></p>
+            </div>
+
+            <h3>Explication :</h3>
+            <p>Pour qu'un fragment puisse être incorporé dans une roche, il faut que ce fragment existe préalablement. Ce principe s'applique aux conglomérats, brèches et roches magmatiques contenant des xénolites.</p>
+
+            <div class="illustration">
+                <div style="background: #FFB6C1; padding: 20px; border-radius: 10px;">
+                    <strong>Granite avec inclusions</strong><br><br>
+                    🪨 = Fragment de schiste (ancien)<br>
+                    ░░ = Matrice de granite (plus récent)<br><br>
+                    <span style="font-size: 1.3em;">
+                    ░░🪨░░░🪨░░░░<br>
+                    ░🪨░░░░░░🪨░░<br>
+                    ░░░░🪨░░░░░🪨<br>
+                    ░░🪨░░🪨░░░░░
+                    </span>
+                </div>
+            </div>
+
+            <div class="exemple">
+                <strong>Exemple 1 :</strong> Un conglomérat contenant des galets de granite, de quartzite et de schiste : ces trois types de roches sont plus anciens que le conglomérat lui-même.
+                <br><br>
+                <strong>Exemple 2 :</strong> Une lave basaltique contenant des xénolites (fragments) de granite : le granite est plus ancien que le basalte.
+            </div>
+
+            <h3>Types d'inclusions :</h3>
+            <ul>
+                <li><strong>Xénolites :</strong> fragments de roche inclus dans une roche magmatique</li>
+                <li><strong>Galets :</strong> fragments arrondis dans les conglomérats</li>
+                <li><strong>Clastes anguleux :</strong> fragments dans les brèches</li>
+            </ul>
+        </div>
+
+        <!-- Slide 8: Principe de Continuité Paléontologique -->
+        <div class="slide">
+            <h2>6. Principe de Continuité Paléontologique (ou Succession Faunique)</h2>
+
+            <div class="principe">
+                <h3>Énoncé du principe (William Smith, 1799)</h3>
+                <p><strong>Les couches géologiques contenant les mêmes fossiles ont le même âge, quelle que soit leur localisation géographique. Les assemblages fossiles se succèdent dans un ordre déterminé et non répétitif.</strong></p>
+            </div>
+
+            <h3>Explication :</h3>
+            <p>Les organismes vivants évoluent au cours du temps géologique. Chaque période est caractérisée par des espèces particulières. Une fois éteintes, ces espèces ne réapparaissent jamais (principe d'irréversibilité de l'évolution).</p>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <strong>Cénozoïque (66 Ma - aujourd'hui)</strong><br>
+                    Fossiles caractéristiques : Mammifères modernes, oiseaux, plantes à fleurs
+                </div>
+                <div class="timeline-item">
+                    <strong>Mésozoïque (252 - 66 Ma)</strong><br>
+                    Fossiles caractéristiques : Dinosaures, ammonites, bélemnites
+                </div>
+                <div class="timeline-item">
+                    <strong>Paléozoïque (541 - 252 Ma)</strong><br>
+                    Fossiles caractéristiques : Trilobites, brachiopodes, premiers poissons
+                </div>
+                <div class="timeline-item">
+                    <strong>Précambrien (> 541 Ma)</strong><br>
+                    Fossiles caractéristiques : Stromatolites, organismes unicellulaires
+                </div>
+            </div>
+
+            <div class="exemple">
+                <strong>Exemple :</strong> Les ammonites sont des fossiles stratigraphiques du Mésozoïque. Si on trouve des ammonites identiques dans des couches en France et au Maroc, ces couches ont le même âge, même si les roches sont différentes.
+            </div>
+
+            <h3>Fossiles stratigraphiques (bons marqueurs) :</h3>
+            <ul>
+                <li>Grande extension géographique</li>
+                <li>Courte durée d'existence (précision temporelle)</li>
+                <li>Grande abondance</li>
+                <li>Bonne fossilisation</li>
+                <li>Exemples : ammonites, trilobites, graptolites, foraminifères</li>
+            </ul>
+        </div>
+
+        <!-- Slide 9: Principe d'Identité Paléontologique -->
+        <div class="slide">
+            <h2>7. Principe d'Identité Paléontologique</h2>
+
+            <div class="principe">
+                <h3>Énoncé du principe</h3>
+                <p><strong>Deux couches contenant les mêmes associations de fossiles (même cortège fossile) sont de même âge.</strong></p>
+            </div>
+
+            <h3>Explication :</h3>
+            <p>Ce principe complète le principe de continuité paléontologique. On ne se base pas sur un seul fossile mais sur une association d'espèces fossiles caractéristiques d'une période donnée.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Période</th>
+                        <th>Fossiles caractéristiques</th>
+                        <th>Âge</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Jurassique</td>
+                        <td>Ammonites + Bélemnites + Dinosaures</td>
+                        <td>201 - 145 Ma</td>
+                    </tr>
+                    <tr>
+                        <td>Crétacé</td>
+                        <td>Ammonites évoluées + Rudistes + Dinosaures</td>
+                        <td>145 - 66 Ma</td>
+                    </tr>
+                    <tr>
+                        <td>Ordovicien</td>
+                        <td>Trilobites + Graptolites + Brachiopodes</td>
+                        <td>485 - 443 Ma</td>
+                    </tr>
+                    <tr>
+                        <td>Carbonifère</td>
+                        <td>Fougères arborescentes + Premiers reptiles</td>
+                        <td>359 - 299 Ma</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="exemple">
+                <strong>Exemple :</strong> Des couches en Angleterre et en Allemagne contenant la même association d'ammonites du genre Dactylioceras sont attribuées au Jurassique inférieur (Toarcien), il y a environ 180 millions d'années.
+            </div>
+        </div>
+
+        <!-- Slide 10: Principe d'Actualisme -->
+        <div class="slide">
+            <h2>8. Principe d'Actualisme (ou d'Uniformitarisme)</h2>
+
+            <div class="principe">
+                <h3>Énoncé du principe (James Hutton, 1785 / Charles Lyell, 1830)</h3>
+                <p><strong>"Le présent est la clé du passé" - Les lois et processus naturels qui opèrent aujourd'hui ont toujours opéré de la même manière dans le passé.</strong></p>
+            </div>
+
+            <h3>Explication :</h3>
+            <p>En observant les phénomènes géologiques actuels (sédimentation, érosion, volcanisme), on peut comprendre comment se sont formées les roches anciennes. Les mêmes causes produisent les mêmes effets.</p>
+
+            <div class="exemple">
+                <strong>Exemples d'application :</strong>
+                <ul>
+                    <li><strong>Rides de plage :</strong> Les rides observées sur les plages actuelles ressemblent aux rides fossiles dans les grès anciens → dépôt dans un environnement littoral</li>
+                    <li><strong>Récifs coralliens :</strong> Les coraux actuels vivent en eaux chaudes et peu profondes → les calcaires coralliens anciens indiquent un ancien environnement tropical marin</li>
+                    <li><strong>Glaciers :</strong> Les dépôts morainiques actuels permettent d'identifier d'anciennes moraines et de reconstituer les glaciations passées</li>
+                    <li><strong>Rivières :</strong> Les méandres et deltas actuels aident à interpréter les structures similaires dans les roches anciennes</li>
+                </ul>
+            </div>
+
+            <div class="important">
+                <strong>Limites :</strong> Ce principe doit être nuancé. Certains phénomènes du passé n'ont pas d'équivalent actuel (grands impacts météoritiques, atmosphère primitive sans oxygène, extinctions massives).
+            </div>
+        </div>
+
+        <!-- Slide 11: Principe de Corrélation -->
+        <div class="slide">
+            <h2>9. Principe de Corrélation</h2>
+
+            <div class="principe">
+                <h3>Énoncé du principe</h3>
+                <p><strong>On peut établir des correspondances entre des couches de différentes régions en se basant sur leurs caractéristiques lithologiques, paléontologiques ou leur position stratigraphique.</strong></p>
+            </div>
+
+            <h3>Types de corrélation :</h3>
+
+            <h3>A. Corrélation lithostratigraphique</h3>
+            <p>Basée sur la nature des roches (lithologie) : même type de roche, même couleur, même texture.</p>
+
+            <h3>B. Corrélation biostratigraphique</h3>
+            <p>Basée sur le contenu fossile : présence des mêmes fossiles caractéristiques.</p>
+
+            <h3>C. Corrélation chronostratigraphique</h3>
+            <p>Basée sur l'âge absolu des roches (datation radiométrique).</p>
+
+            <div class="illustration">
+                <pre>
+    SITE A                  SITE B                  SITE C
+    (France)                (Belgique)              (Allemagne)
+
+    ═══════ Calcaire        ─────── Marne           ≈≈≈≈≈≈≈ Sable
+    (ammonites X)           (ammonites X)           (ammonites X)
+    ↓                       ↓                       ↓
+    MÊME ÂGE grâce aux fossiles identiques (corrélation biostratigraphique)
+                </pre>
+            </div>
+
+            <div class="exemple">
+                <strong>Exemple :</strong> La limite Crétacé-Paléogène (extinction des dinosaures, 66 Ma) est marquée par une fine couche d'argile riche en iridium observable partout dans le monde. Cette couche permet une corrélation précise entre continents.
+            </div>
+        </div>
+
+        <!-- Slide 12: Principe de Succession Écologique -->
+        <div class="slide">
+            <h2>10. Principe de Succession Écologique</h2>
+
+            <div class="principe">
+                <h3>Énoncé du principe</h3>
+                <p><strong>Les changements dans les assemblages fossiles au sein d'une série stratigraphique reflètent des changements environnementaux au cours du temps.</strong></p>
+            </div>
+
+            <h3>Explication :</h3>
+            <p>Les variations verticales des fossiles dans une succession de couches peuvent indiquer des modifications du milieu de dépôt : approfondissement ou comblement d'un bassin, réchauffement ou refroidissement climatique, transgression ou régression marine.</p>
+
+            <div class="illustration">
+                <strong>Exemple de transgression marine :</strong><br><br>
+                <div style="text-align: left;">
+                ┌─────────────────────────────────┐<br>
+                │ Calcaires marins profonds       │ ← MER OUVERTE<br>
+                │ (crinoïdes, brachiopodes)       │<br>
+                ├─────────────────────────────────┤<br>
+                │ Sables littoraux                │ ← PLAGE<br>
+                │ (bivalves, gastéropodes)        │<br>
+                ├─────────────────────────────────┤<br>
+                │ Argiles continentales           │ ← TERRE<br>
+                │ (plantes, traces de racines)    │<br>
+                └─────────────────────────────────┘<br>
+                <br>
+                ↑ TEMPS (la mer avance sur le continent)
+                </div>
+            </div>
+
+            <div class="exemple">
+                <strong>Exemple :</strong> Dans le Bassin Parisien, on observe une succession de couches allant de dépôts continentaux (argiles avec plantes fossiles) à des calcaires marins (avec ammonites et oursins). Cela témoigne d'une transgression marine au Jurassique.
+            </div>
+        </div>
+
+        <!-- Slide 13: Lacunes Stratigraphiques et Discordances -->
+        <div class="slide">
+            <h2>11. Lacunes Stratigraphiques et Discordances</h2>
+
+            <div class="principe">
+                <h3>Concepts clés</h3>
+                <p><strong>Une lacune stratigraphique représente une période de temps non enregistrée dans la succession des couches, due à une absence de dépôt ou à une érosion.</strong></p>
+            </div>
+
+            <h3>Types de surfaces de discontinuité :</h3>
+
+            <h3>A. Discordance angulaire</h3>
+            <p>Les couches supérieures reposent sur des couches inférieures érodées et basculées.</p>
+
+            <div class="illustration">
+                <pre>
+    ═══════════════════════ Couches récentes horizontales
+    ───────────────────────
+    ≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈ Surface d'érosion
+         ╱╱╱╱╱╱╱╱╱╱╱
+        ╱╱╱╱╱╱╱╱╱╱╱  Couches anciennes basculées et érodées
+       ╱╱╱╱╱╱╱╱╱╱╱
+                </pre>
+            </div>
+
+            <h3>B. Discordance de ravinement</h3>
+            <p>Surface d'érosion entre deux séries parallèles, sans déformation tectonique.</p>
+
+            <h3>C. Paraconformité</h3>
+            <p>Contact parallèle entre deux séries sans érosion visible, mais avec une lacune de temps importante.</p>
+
+            <div class="exemple">
+                <strong>Exemple célèbre :</strong> La discordance de Hutton à Siccar Point (Écosse) montre des couches verticales du Silurien (435 Ma) surmontées par des couches horizontales du Dévonien (370 Ma). Il manque environ 65 millions d'années d'enregistrement.
+            </div>
+
+            <h3>Signification :</h3>
+            <ul>
+                <li>Soulèvement et émersion (arrêt de la sédimentation)</li>
+                <li>Érosion</li>
+                <li>Déformation tectonique (plissement, basculement)</li>
+                <li>Nouvelle période de sédimentation</li>
+            </ul>
+        </div>
+
+        <!-- Slide 14: Applications Pratiques -->
+        <div class="slide">
+            <h2>Applications Pratiques des Principes Stratigraphiques</h2>
+
+            <h3>1. Exploration des ressources naturelles</h3>
+            <ul>
+                <li><strong>Pétrole et gaz :</strong> Identifier les roches-mères, réservoirs et couvertures</li>
+                <li><strong>Charbon :</strong> Localiser les veines de charbon dans les séries carbonifères</li>
+                <li><strong>Eaux souterraines :</strong> Cartographier les aquifères</li>
+                <li><strong>Minerais :</strong> Comprendre les contextes de formation des gisements</li>
+            </ul>
+
+            <h3>2. Génie civil et urbanisme</h3>
+            <ul>
+                <li>Évaluation de la stabilité des terrains pour la construction</li>
+                <li>Prévision des risques géologiques (glissements de terrain, effondrements)</li>
+                <li>Conception de tunnels et fondations</li>
+            </ul>
+
+            <h3>3. Paléoclimatologie</h3>
+            <ul>
+                <li>Reconstitution des climats anciens</li>
+                <li>Étude des cycles glaciaires et interglaciaires</li>
+                <li>Compréhension des variations du niveau marin</li>
+            </ul>
+
+            <h3>4. Paléogéographie</h3>
+            <ul>
+                <li>Reconstitution de la position des continents</li>
+                <li>Identification d'anciens océans disparus</li>
+                <li>Cartographie des environnements anciens (déserts, mers, lacs)</li>
+            </ul>
+
+            <h3>5. Datation et échelle des temps géologiques</h3>
+            <ul>
+                <li>Construction de l'échelle stratigraphique internationale</li>
+                <li>Corrélation entre les sites du monde entier</li>
+                <li>Calibration des méthodes de datation</li>
+            </ul>
+        </div>
+
+        <!-- Slide 15: Méthodes Modernes -->
+        <div class="slide">
+            <h2>Méthodes Modernes en Stratigraphie</h2>
+
+            <h3>1. Stratigraphie séquentielle</h3>
+            <p>Analyse des cycles de variation du niveau marin et identification des séquences de dépôt.</p>
+
+            <h3>2. Magnétostratigraphie</h3>
+            <p>Utilisation des inversions du champ magnétique terrestre enregistrées dans les roches pour la datation et corrélation.</p>
+
+            <h3>3. Chimiostratigraphie</h3>
+            <p>Analyse des variations de composition isotopique (C, O, Sr) pour corréler et reconstituer les paléoenvironnements.</p>
+
+            <h3>4. Cyclostratigraphie</h3>
+            <p>Étude des cycles astronomiques (Milankovitch) enregistrés dans les séries sédimentaires.</p>
+
+            <h3>5. Stratigraphie sismique</h3>
+            <p>Utilisation de la sismique réflexion pour imager les structures géologiques en profondeur.</p>
+
+            <h3>6. Biostratigraphie à haute résolution</h3>
+            <ul>
+                <li>Microfossiles (foraminifères, nannofossiles)</li>
+                <li>Palynologie (pollens et spores)</li>
+                <li>Analyse de micro-organismes pour des datations précises</li>
+            </ul>
+
+            <div class="important">
+                <strong>Approche intégrée :</strong> Les géologues modernes combinent plusieurs méthodes stratigraphiques pour obtenir une vision complète et précise de l'histoire géologique.
+            </div>
+        </div>
+
+        <!-- Slide 16: Synthèse -->
+        <div class="slide">
+            <h2>Synthèse des Principes Stratigraphiques</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Principe</th>
+                        <th>Auteur</th>
+                        <th>Concept clé</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Superposition</td>
+                        <td>Sténon (1669)</td>
+                        <td>Les couches du bas sont plus anciennes</td>
+                    </tr>
+                    <tr>
+                        <td>Continuité latérale</td>
+                        <td>Sténon (1669)</td>
+                        <td>Les couches s'étendent latéralement</td>
+                    </tr>
+                    <tr>
+                        <td>Horizontalité primaire</td>
+                        <td>Sténon (1669)</td>
+                        <td>Dépôt initial horizontal</td>
+                    </tr>
+                    <tr>
+                        <td>Recoupement</td>
+                        <td>-</td>
+                        <td>La structure recoupante est plus récente</td>
+                    </tr>
+                    <tr>
+                        <td>Inclusion</td>
+                        <td>-</td>
+                        <td>Les fragments inclus sont plus anciens</td>
+                    </tr>
+                    <tr>
+                        <td>Continuité paléontologique</td>
+                        <td>Smith (1799)</td>
+                        <td>Même fossiles = même âge</td>
+                    </tr>
+                    <tr>
+                        <td>Identité paléontologique</td>
+                        <td>-</td>
+                        <td>Même assemblage fossile = même âge</td>
+                    </tr>
+                    <tr>
+                        <td>Actualisme</td>
+                        <td>Hutton/Lyell</td>
+                        <td>Le présent est la clé du passé</td>
+                    </tr>
+                    <tr>
+                        <td>Corrélation</td>
+                        <td>-</td>
+                        <td>Correspondance entre régions</td>
+                    </tr>
+                    <tr>
+                        <td>Succession écologique</td>
+                        <td>-</td>
+                        <td>Variation fossile = changement environnemental</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="important" style="margin-top: 30px;">
+                <h3>Points essentiels à retenir :</h3>
+                <ul>
+                    <li>Les principes stratigraphiques permettent de déterminer l'ordre chronologique relatif des événements géologiques</li>
+                    <li>Ils sont à la base de la compréhension de l'histoire de la Terre</li>
+                    <li>Leur application combinée permet une reconstitution précise du passé géologique</li>
+                    <li>Ils sont fondamentaux pour l'exploration des ressources et l'étude des paléoenvironnements</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 17: Conclusion -->
+        <div class="slide">
+            <h2>Conclusion</h2>
+
+            <p style="font-size: 1.2em; line-height: 2;">
+                Les principes stratigraphiques constituent les fondements de la géologie historique. Établis principalement aux XVIIe et XVIIIe siècles, ils demeurent d'une actualité remarquable et sont complétés par des méthodes modernes toujours plus précises.
+            </p>
+
+            <h3>Importance scientifique :</h3>
+            <ul>
+                <li>Reconstitution de 4,6 milliards d'années d'histoire terrestre</li>
+                <li>Compréhension de l'évolution de la vie</li>
+                <li>Étude des paléoclimats et paléoenvironnements</li>
+                <li>Prévision des ressources naturelles</li>
+            </ul>
+
+            <h3>Perspective historique :</h3>
+            <p>De Nicolas Sténon au XVIIe siècle aux géologues du XXIe siècle, la stratigraphie n'a cessé d'évoluer, intégrant de nouvelles technologies (géochimie, géophysique, imagerie satellitaire) tout en conservant ses principes fondamentaux.</p>
+
+            <div class="definition" style="margin-top: 30px;">
+                <strong>Citation de James Hutton (1788) :</strong><br>
+                <em>"Nous ne trouvons aucune trace d'un commencement, aucune perspective d'une fin."</em><br>
+                Cette phrase illustre l'immensité du temps géologique révélée par la stratigraphie.
+            </div>
+
+            <h3 style="margin-top: 30px;">Pour aller plus loin :</h3>
+            <ul>
+                <li>Étudier des coupes géologiques régionales</li>
+                <li>Visiter des sites géologiques remarquables</li>
+                <li>Analyser des fossiles et apprendre à les identifier</li>
+                <li>Comprendre les échelles de temps géologiques</li>
+                <li>S'initier aux méthodes de datation radiométrique</li>
+            </ul>
+        </div>
+
+        <!-- Slide 18: Ressources et Références -->
+        <div class="slide">
+            <h2>Ressources et Références</h2>
+
+            <h3>Auteurs historiques majeurs :</h3>
+            <ul>
+                <li><strong>Nicolas Sténon (1638-1686)</strong> - Fondateur de la stratigraphie moderne</li>
+                <li><strong>James Hutton (1726-1797)</strong> - Principe d'actualisme</li>
+                <li><strong>William Smith (1769-1839)</strong> - Première carte géologique, principe de succession faunique</li>
+                <li><strong>Charles Lyell (1797-1875)</strong> - Uniformitarisme</li>
+                <li><strong>Alcide d'Orbigny (1802-1857)</strong> - Stratigraphie paléontologique</li>
+            </ul>
+
+            <h3>Sites géologiques remarquables à visiter :</h3>
+            <ul>
+                <li><strong>Grand Canyon (USA)</strong> - Superposition spectaculaire de couches</li>
+                <li><strong>Siccar Point (Écosse)</strong> - Discordance de Hutton</li>
+                <li><strong>Falaises d'Étretat (France)</strong> - Craie du Crétacé</li>
+                <li><strong>Alpes (Europe)</strong> - Plis et déformations tectoniques</li>
+                <li><strong>Bassin de Paris (France)</strong> - Séries sédimentaires complètes</li>
+            </ul>
+
+            <h3>Concepts à approfondir :</h3>
+            <ul>
+                <li>Échelle des temps géologiques internationale</li>
+                <li>Datation radiométrique (Carbone 14, Uranium-Plomb, etc.)</li>
+                <li>Tectonique des plaques et stratigraphie</li>
+                <li>Paléontologie systématique</li>
+                <li>Sédimentologie et environnements de dépôt</li>
+            </ul>
+
+            <div class="important">
+                <h3>Compétences développées :</h3>
+                <ul>
+                    <li>Lecture et interprétation de coupes géologiques</li>
+                    <li>Datation relative des événements géologiques</li>
+                    <li>Corrélation stratigraphique</li>
+                    <li>Reconstitution paléogéographique</li>
+                    <li>Raisonnement logique et scientifique</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <p>Présentation sur les Principes Stratigraphiques</p>
+        <p>Sciences de la Vie et de la Terre</p>
+        <p style="margin-top: 20px; font-size: 0.9em;">
+            "La Terre est un livre dont chaque couche raconte une page de son histoire"
+        </p>
+    </div>
+
+    <script>
+        // Animation au scroll
+        const slides = document.querySelectorAll('.slide');
+
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        slides.forEach(slide => {
+            observer.observe(slide);
+        });
+
+        // Bouton pour imprimer
+        document.addEventListener('DOMContentLoaded', function() {
+            const printBtn = document.createElement('button');
+            printBtn.textContent = '🖨️ Imprimer';
+            printBtn.style.cssText = 'position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; background: #667eea; color: white; border: none; border-radius: 50px; cursor: pointer; font-size: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 1000;';
+            printBtn.onclick = () => window.print();
+            document.body.appendChild(printBtn);
+        });
+    </script>
+</body>
+</html>
