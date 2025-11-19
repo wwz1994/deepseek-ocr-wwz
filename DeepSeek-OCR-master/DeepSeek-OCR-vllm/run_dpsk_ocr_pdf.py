@@ -10,7 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 if torch.version.cuda == '11.8':
     os.environ["TRITON_PTXAS_PATH"] = "/usr/local/cuda-11.8/bin/ptxas"
-os.environ['VLLM_USE_V1'] = '0'
+os.environ['VLLM_USE_V1'] = '1'
 os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 
@@ -40,17 +40,23 @@ llm = LLM(
     max_num_seqs=MAX_CONCURRENCY,
     tensor_parallel_size=1,
     gpu_memory_utilization=0.9,
-    disable_mm_preprocessor_cache=True
+    disable_mm_preprocessor_cache=True,
+    logits_processors=["process.ngram_norepeat_v1_adapter:NoRepeatNGramAdaptor"],
 )
 
-logits_processors = [NoRepeatNGramLogitsProcessor(ngram_size=20, window_size=50, whitelist_token_ids= {128821, 128822})] #window for fast；whitelist_token_ids: <td>,</td>
+#logits_processors = [NoRepeatNGramLogitsProcessor(ngram_size=20, window_size=50, whitelist_token_ids= {128821, 128822})] #window for fast；whitelist_token_ids: <td>,</td>
 
 sampling_params = SamplingParams(
     temperature=0.0,
     max_tokens=8192,
-    logits_processors=logits_processors,
+#    logits_processors=logits_processors,
     skip_special_tokens=False,
     include_stop_str_in_output=True,
+    extra_args={
+        "ngram_size": 30,
+        "window_size": 90,
+        "whitelist_token_ids": {128821, 128822}
+    }
 )
 
 

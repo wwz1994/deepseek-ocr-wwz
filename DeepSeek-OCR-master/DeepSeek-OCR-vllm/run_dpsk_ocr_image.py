@@ -6,7 +6,7 @@ import torch
 if torch.version.cuda == '11.8':
     os.environ["TRITON_PTXAS_PATH"] = "/usr/local/cuda-11.8/bin/ptxas"
 
-os.environ['VLLM_USE_V1'] = '0'
+os.environ['VLLM_USE_V1'] = '1'
 os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 from vllm import AsyncLLMEngine, SamplingParams
@@ -156,6 +156,7 @@ async def stream_generate(image=None, prompt=''):
         trust_remote_code=True,  
         tensor_parallel_size=1,
         gpu_memory_utilization=0.75,
+        logits_processors=["process.ngram_norepeat_v1_adapter:NoRepeatNGramAdaptor"],
     )
     engine = AsyncLLMEngine.from_engine_args(engine_args)
     
@@ -166,6 +167,11 @@ async def stream_generate(image=None, prompt=''):
         max_tokens=8192,
         logits_processors=logits_processors,
         skip_special_tokens=False,
+        extra_args={
+            "ngram_size": 30,
+            "window_size": 90,
+            "whitelist_token_ids": {128821, 128822}
+        }
         # ignore_eos=False,
         
     )
@@ -209,6 +215,8 @@ if __name__ == "__main__":
     image = load_image(INPUT_PATH).convert('RGB')
 
     
+    result_out = asyncio.run(stream_generate(image_features, prompt))
+
     if '<image>' in PROMPT:
 
         image_features = DeepseekOCRProcessor().tokenize_with_images(images = [image], bos=True, eos=True, cropping=CROP_MODE)
@@ -217,7 +225,6 @@ if __name__ == "__main__":
 
     prompt = PROMPT
 
-    result_out = asyncio.run(stream_generate(image_features, prompt))
 
 
     save_results = 1
