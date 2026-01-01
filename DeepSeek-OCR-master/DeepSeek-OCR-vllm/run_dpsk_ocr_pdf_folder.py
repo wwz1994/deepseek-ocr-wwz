@@ -7,7 +7,7 @@ import glob
 from tqdm import tqdm
 import torch
 from concurrent.futures import ThreadPoolExecutor
-
+import sys
 
 if torch.version.cuda == '11.8':
     os.environ["TRITON_PTXAS_PATH"] = "/usr/local/cuda-11.8/bin/ptxas"
@@ -44,7 +44,7 @@ llm = LLM(
     disable_mm_preprocessor_cache=True
 )
 
-logits_processors = [NoRepeatNGramLogitsProcessor(ngram_size=20, window_size=50, whitelist_token_ids= {128821, 128822})] #window for fast；whitelist_token_ids: <td>,</td>
+logits_processors = [NoRepeatNGramLogitsProcessor(ngram_size=15, window_size=60, whitelist_token_ids= {128821, 128822})] #window for fast；whitelist_token_ids: <td>,</td>
 
 sampling_params = SamplingParams(
     temperature=0.0,
@@ -52,6 +52,7 @@ sampling_params = SamplingParams(
     logits_processors=logits_processors,
     skip_special_tokens=False,
     include_stop_str_in_output=True,
+    repetition_penalty=1.05,
 )
 
 
@@ -68,29 +69,45 @@ def pdf_to_images_high_quality(pdf_path, dpi=144, image_format="PNG"):
     """
     images = []
 
-    pdf_document = fitz.open(pdf_path)
+    try:
+        pdf_document = fitz.open(pdf_path)
+    except Exception as e:
+        print(f"{Colors.RED}Error opening PDF {pdf_path}: {e}{Colors.RESET}")
+        return []
+
+    if pdf_document.needs_pass:
+        print(f"{Colors.RED}PDF {pdf_path} is password protected.{Colors.RESET}")
+        return []
+
+    if pdf_document.page_count == 0:
+        print(f"{Colors.YELLOW}PDF {pdf_path} has 0 pages.{Colors.RESET}")
+        return []
 
     zoom = dpi / 72.0
     matrix = fitz.Matrix(zoom, zoom)
 
     for page_num in range(pdf_document.page_count):
-        page = pdf_document[page_num]
+        try:
+            page = pdf_document[page_num]
 
-        pixmap = page.get_pixmap(matrix=matrix, alpha=False)
-        Image.MAX_IMAGE_PIXELS = None
+            pixmap = page.get_pixmap(matrix=matrix, alpha=False)
+            Image.MAX_IMAGE_PIXELS = None
 
-        if image_format.upper() == "PNG":
-            img_data = pixmap.tobytes("png")
-            img = Image.open(io.BytesIO(img_data))
-        else:
-            img_data = pixmap.tobytes("png")
-            img = Image.open(io.BytesIO(img_data))
-            if img.mode in ('RGBA', 'LA'):
-                background = Image.new('RGB', img.size, (255, 255, 255))
-                background.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
-                img = background
+            if image_format.upper() == "PNG":
+                img_data = pixmap.tobytes("png")
+                img = Image.open(io.BytesIO(img_data))
+            else:
+                img_data = pixmap.tobytes("png")
+                img = Image.open(io.BytesIO(img_data))
+                if img.mode in ('RGBA', 'LA'):
+                    background = Image.new('RGB', img.size, (255, 255, 255))
+                    background.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
+                    img = background
 
-        images.append(img)
+            images.append(img)
+        except Exception as e:
+            print(f"{Colors.YELLOW}Error processing page {page_num} of {pdf_path}: {e}{Colors.RESET}")
+            continue
 
     pdf_document.close()
     return images
