@@ -9,6 +9,7 @@ import torch
 from concurrent.futures import ThreadPoolExecutor
 import sys
 import gc
+import json
 
 if torch.version.cuda == '11.8':
     os.environ["TRITON_PTXAS_PATH"] = "/usr/local/cuda-11.8/bin/ptxas"
@@ -30,37 +31,73 @@ from process.image_process import DeepseekOCRProcessor
 
 ModelRegistry.register_model("DeepseekOCRForCausalLM", DeepseekOCRForCausalLM)
 
+SETTINGS_FILE = "ocr_settings.json"
 
-# Reduced memory utilization to leave room for system overhead
-llm = LLM(
-    model=MODEL_PATH,
-    hf_overrides={"architectures": ["DeepseekOCRForCausalLM"]},
-    block_size=256,
-    enforce_eager=False,
-    trust_remote_code=True,
-    max_model_len=8192,
-    swap_space=0,
-    max_num_seqs=MAX_CONCURRENCY,
-    tensor_parallel_size=1,
-    gpu_memory_utilization=0.7, # Reduced from 0.9 to 0.7
-    disable_mm_preprocessor_cache=True
-)
+def get_user_settings():
+    if os.path.exists(SETTINGS_FILE):
+        try:
+            with open(SETTINGS_FILE, 'r') as f:
+                print(f"Loading settings from {SETTINGS_FILE}...")
+                return json.load(f)
+        except:
+            print("Error loading settings file. Re-configuring.")
+            pass
 
-logits_processors = [NoRepeatNGramLogitsProcessor(ngram_size=15, window_size=60, whitelist_token_ids= {128821, 128822})] #window for fast；whitelist_token_ids: <td>,</td>
+    print("\n" + "="*60)
+    print("FIRST RUN CONFIGURATION")
+    print("="*60)
+    print("Please select a processing mode based on your hardware:")
+    print("\n1. High Performance (Recommended for 48GB+ VRAM, e.g., A6000, A40)")
+    print("   - Fastest speed.")
+    print("   - Processes pages in larger batches (10 pages).")
 
-sampling_params = SamplingParams(
-    temperature=0.0,
-    max_tokens=8192,
-    logits_processors=logits_processors,
-    skip_special_tokens=False,
-    include_stop_str_in_output=True,
-    repetition_penalty=1.05,
-)
+    print("\n2. Balanced (Recommended for 24GB+ VRAM, e.g., RTX 3090, 4090)")
+    print("   - Good speed/stability tradeoff.")
+    print("   - Processes pages in medium batches (5 pages).")
 
-# Drastically reduced batch size to preventing OOM
-PAGE_BATCH_SIZE = 1
-# Reduced worker count to save system RAM
-SAFE_NUM_WORKERS = min(4, NUM_WORKERS)
+    print("\n3. Safe Mode (Recommended for <24GB VRAM or if experiencing crashes)")
+    print("   - Slowest but most stable.")
+    print("   - Processes 1 page at a time.")
+    print("   - Use this if you see 'OOM' (Out Of Memory) or 'Killed' errors.")
+
+    while True:
+        choice = input("\nEnter choice (1-3): ").strip()
+        if choice in ['1', '2', '3']:
+            break
+        print("Invalid choice. Please enter 1, 2, or 3.")
+
+    settings = {}
+    if choice == '1':
+        settings = {
+            "PAGE_BATCH_SIZE": 10,
+            "MAX_CONCURRENCY": 100,
+            "GPU_UTILIZATION": 0.9,
+            "NUM_WORKERS": 16
+        }
+    elif choice == '2':
+        settings = {
+            "PAGE_BATCH_SIZE": 5,
+            "MAX_CONCURRENCY": 20,
+            "GPU_UTILIZATION": 0.8,
+            "NUM_WORKERS": 8
+        }
+    else:
+        settings = {
+            "PAGE_BATCH_SIZE": 1,
+            "MAX_CONCURRENCY": 5,
+            "GPU_UTILIZATION": 0.6,
+            "NUM_WORKERS": 2
+        }
+
+    try:
+        with open(SETTINGS_FILE, 'w') as f:
+            json.dump(settings, f, indent=4)
+        print(f"\nSettings saved to {SETTINGS_FILE}. Delete this file to re-configure.")
+    except Exception as e:
+        print(f"Warning: Could not save settings file: {e}")
+
+    return settings
+
 
 class Colors:
     RED = '\033[31m'
@@ -275,6 +312,42 @@ if __name__ == "__main__":
         print(f"{Colors.YELLOW}No PDF files found in {INPUT_PATH}{Colors.RESET}")
         exit(0)
 
+    # Get user configuration
+    settings = get_user_settings()
+    PAGE_BATCH_SIZE = settings["PAGE_BATCH_SIZE"]
+    SAFE_NUM_WORKERS = settings["NUM_WORKERS"]
+
+    print(f"\n{Colors.GREEN}Initializing Engine with:{Colors.RESET}")
+    print(f"  Batch Size: {PAGE_BATCH_SIZE}")
+    print(f"  GPU Util: {settings['GPU_UTILIZATION']}")
+    print(f"  Workers: {SAFE_NUM_WORKERS}")
+
+    # Initialize LLM with user settings
+    llm = LLM(
+        model=MODEL_PATH,
+        hf_overrides={"architectures": ["DeepseekOCRForCausalLM"]},
+        block_size=256,
+        enforce_eager=False,
+        trust_remote_code=True,
+        max_model_len=8192,
+        swap_space=0,
+        max_num_seqs=settings["MAX_CONCURRENCY"],
+        tensor_parallel_size=1,
+        gpu_memory_utilization=settings["GPU_UTILIZATION"],
+        disable_mm_preprocessor_cache=True
+    )
+
+    logits_processors = [NoRepeatNGramLogitsProcessor(ngram_size=15, window_size=60, whitelist_token_ids= {128821, 128822})]
+
+    sampling_params = SamplingParams(
+        temperature=0.0,
+        max_tokens=8192,
+        logits_processors=logits_processors,
+        skip_special_tokens=False,
+        include_stop_str_in_output=True,
+        repetition_penalty=1.05,
+    )
+
     print(f'{Colors.GREEN}Found {len(pdf_files)} PDF files in {INPUT_PATH}{Colors.RESET}')
 
     prompt = PROMPT
@@ -306,16 +379,11 @@ if __name__ == "__main__":
         # Clear existing files if they exist (since we append)
         if os.path.exists(mmd_det_path): os.remove(mmd_det_path)
         if os.path.exists(mmd_path): os.remove(mmd_path)
-        # For the PDF layout, we can't easily append, so we accumulate images in memory
-        # BUT for massive PDFs, accumulating 400 images in memory might also be an issue.
-        # However, PIL images are smaller than the vllm context.
-        # Let's keep the draw_images in memory for now, but be aware.
-        # If the user crashes on PIL images, we'd need to save them to disk temporarily.
 
         draw_images = []
         jdx = 0
 
-        # Process in chunks of 1 to minimize memory footprint
+        # Process in chunks
         for start_page in range(0, total_pages, PAGE_BATCH_SIZE):
             end_page = min(start_page + PAGE_BATCH_SIZE, total_pages)
             print(f"  Processing pages {start_page} to {end_page} of {total_pages}...")
