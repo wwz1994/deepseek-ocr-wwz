@@ -31,6 +31,7 @@ from process.image_process import DeepseekOCRProcessor
 ModelRegistry.register_model("DeepseekOCRForCausalLM", DeepseekOCRForCausalLM)
 
 
+# Reduced memory utilization to leave room for system overhead
 llm = LLM(
     model=MODEL_PATH,
     hf_overrides={"architectures": ["DeepseekOCRForCausalLM"]},
@@ -41,7 +42,7 @@ llm = LLM(
     swap_space=0,
     max_num_seqs=MAX_CONCURRENCY,
     tensor_parallel_size=1,
-    gpu_memory_utilization=0.9,
+    gpu_memory_utilization=0.7, # Reduced from 0.9 to 0.7
     disable_mm_preprocessor_cache=True
 )
 
@@ -56,7 +57,10 @@ sampling_params = SamplingParams(
     repetition_penalty=1.05,
 )
 
-PAGE_BATCH_SIZE = 10  # Number of pages to process at a time to avoid OOM
+# Drastically reduced batch size to preventing OOM
+PAGE_BATCH_SIZE = 1
+# Reduced worker count to save system RAM
+SAFE_NUM_WORKERS = min(4, NUM_WORKERS)
 
 class Colors:
     RED = '\033[31m'
@@ -294,12 +298,24 @@ if __name__ == "__main__":
             print(f"{Colors.YELLOW}PDF {pdf_file} has 0 pages. Skipping.{Colors.RESET}")
             continue
 
-        contents_det = ''
-        contents = ''
+        # Prepare filenames
+        mmd_det_path = os.path.join(OUTPUT_PATH, pdf_name.replace('.pdf', '_det.mmd'))
+        mmd_path = os.path.join(OUTPUT_PATH, pdf_name.replace('.pdf', '.mmd'))
+        pdf_out_path = os.path.join(OUTPUT_PATH, pdf_name.replace('.pdf', '_layouts.pdf'))
+
+        # Clear existing files if they exist (since we append)
+        if os.path.exists(mmd_det_path): os.remove(mmd_det_path)
+        if os.path.exists(mmd_path): os.remove(mmd_path)
+        # For the PDF layout, we can't easily append, so we accumulate images in memory
+        # BUT for massive PDFs, accumulating 400 images in memory might also be an issue.
+        # However, PIL images are smaller than the vllm context.
+        # Let's keep the draw_images in memory for now, but be aware.
+        # If the user crashes on PIL images, we'd need to save them to disk temporarily.
+
         draw_images = []
         jdx = 0
 
-        # Process in chunks
+        # Process in chunks of 1 to minimize memory footprint
         for start_page in range(0, total_pages, PAGE_BATCH_SIZE):
             end_page = min(start_page + PAGE_BATCH_SIZE, total_pages)
             print(f"  Processing pages {start_page} to {end_page} of {total_pages}...")
@@ -314,7 +330,7 @@ if __name__ == "__main__":
                 print(f"{Colors.YELLOW}No images extracted for chunk {start_page}-{end_page}{Colors.RESET}")
                 continue
 
-            with ThreadPoolExecutor(max_workers=NUM_WORKERS) as executor:
+            with ThreadPoolExecutor(max_workers=SAFE_NUM_WORKERS) as executor:
                 batch_inputs = list(tqdm(
                     executor.map(process_single_image, images),
                     total=len(images),
@@ -327,6 +343,10 @@ if __name__ == "__main__":
                 sampling_params=sampling_params
             )
 
+            # Temporary accumulators for this chunk
+            chunk_contents_det = ''
+            chunk_contents = ''
+
             for output, img in zip(outputs_list, images):
                 content = output.outputs[0].text
 
@@ -334,15 +354,11 @@ if __name__ == "__main__":
                     content = content.replace('<｜end▁of▁sentence｜>', '')
                 else:
                     if SKIP_REPEAT:
-                        # Even if we skip repeat, we should increment jdx to keep alignment if we were depending on it?
-                        # But original logic skips the page entirely.
-                        # If we skip, jdx is not incremented, which aligns with "processed pages".
-                        # But let's stick to original logic: if skip, continue loop.
                         continue
 
                 page_num = f'\n<--- Page Split --->'
 
-                contents_det += content + f'\n{page_num}\n'
+                chunk_contents_det += content + f'\n{page_num}\n'
 
                 image_draw = img.copy()
 
@@ -350,6 +366,7 @@ if __name__ == "__main__":
 
                 result_image = process_image_with_refs(image_draw, matches_ref, jdx, pdf_base_name)
 
+                # Accumulate result images for final PDF
                 draw_images.append(result_image)
 
                 for idx, a_match_image in enumerate(matches_images):
@@ -359,30 +376,33 @@ if __name__ == "__main__":
                 for idx, a_match_other in enumerate(mathes_other):
                     content = content.replace(a_match_other, '').replace('\\coloneqq', ':=').replace('\\eqqcolon', '=:').replace('\n\n\n\n', '\n\n').replace('\n\n\n', '\n\n')
 
-                contents += content + f'\n{page_num}\n'
+                chunk_contents += content + f'\n{page_num}\n'
 
                 jdx += 1
+
+            # Append text to files immediately
+            with open(mmd_det_path, 'a', encoding='utf-8') as afile:
+                afile.write(chunk_contents_det)
+
+            with open(mmd_path, 'a', encoding='utf-8') as afile:
+                afile.write(chunk_contents)
 
             # Explicit cleanup after each chunk
             del images
             del batch_inputs
             del outputs_list
+            # Clear CUDA cache to prevent fragmentation/OOM
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
             gc.collect()
 
-        mmd_det_path = os.path.join(OUTPUT_PATH, pdf_name.replace('.pdf', '_det.mmd'))
-        mmd_path = os.path.join(OUTPUT_PATH, pdf_name.replace('.pdf', '.mmd'))
-        pdf_out_path = os.path.join(OUTPUT_PATH, pdf_name.replace('.pdf', '_layouts.pdf'))
-
-        with open(mmd_det_path, 'w', encoding='utf-8') as afile:
-            afile.write(contents_det)
-
-        with open(mmd_path, 'w', encoding='utf-8') as afile:
-            afile.write(contents)
-
-        pil_to_pdf_img2pdf(draw_images, pdf_out_path)
+        # Save the layout PDF at the end
+        if draw_images:
+            try:
+                pil_to_pdf_img2pdf(draw_images, pdf_out_path)
+            except Exception as e:
+                print(f"{Colors.RED}Failed to save layout PDF: {e}{Colors.RESET}")
 
         # Cleanup final accumulators for this PDF
         del draw_images
-        del contents
-        del contents_det
         gc.collect()
