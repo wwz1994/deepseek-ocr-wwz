@@ -8,6 +8,7 @@ from tqdm import tqdm
 import torch
 from concurrent.futures import ThreadPoolExecutor
 import sys
+import gc
 
 if torch.version.cuda == '11.8':
     os.environ["TRITON_PTXAS_PATH"] = "/usr/local/cuda-11.8/bin/ptxas"
@@ -55,6 +56,7 @@ sampling_params = SamplingParams(
     repetition_penalty=1.05,
 )
 
+PAGE_BATCH_SIZE = 10  # Number of pages to process at a time to avoid OOM
 
 class Colors:
     RED = '\033[31m'
@@ -63,9 +65,9 @@ class Colors:
     BLUE = '\033[34m'
     RESET = '\033[0m'
 
-def pdf_to_images_high_quality(pdf_path, dpi=144, image_format="PNG"):
+def pdf_to_images_chunk(pdf_path, start_page, end_page, dpi=144, image_format="PNG"):
     """
-    pdf2images
+    pdf2images for a specific range of pages
     """
     images = []
 
@@ -86,7 +88,10 @@ def pdf_to_images_high_quality(pdf_path, dpi=144, image_format="PNG"):
     zoom = dpi / 72.0
     matrix = fitz.Matrix(zoom, zoom)
 
-    for page_num in range(pdf_document.page_count):
+    # Ensure end_page does not exceed actual page count
+    actual_end_page = min(end_page, pdf_document.page_count)
+
+    for page_num in range(start_page, actual_end_page):
         try:
             page = pdf_document[page_num]
 
@@ -276,69 +281,97 @@ if __name__ == "__main__":
         pdf_name = os.path.basename(pdf_file)
         pdf_base_name = os.path.splitext(pdf_name)[0]
 
+        # Get total page count first
         try:
-            images = pdf_to_images_high_quality(pdf_file)
+            doc_tmp = fitz.open(pdf_file)
+            total_pages = doc_tmp.page_count
+            doc_tmp.close()
         except Exception as e:
-            print(f"{Colors.RED}Failed to process {pdf_file}: {e}{Colors.RESET}")
+            print(f"{Colors.RED}Could not open PDF {pdf_file} to read page count: {e}{Colors.RESET}")
             continue
 
-        if not images:
-            print(f"{Colors.YELLOW}No images extracted from {pdf_file}{Colors.RESET}")
+        if total_pages == 0:
+            print(f"{Colors.YELLOW}PDF {pdf_file} has 0 pages. Skipping.{Colors.RESET}")
             continue
-
-        with ThreadPoolExecutor(max_workers=NUM_WORKERS) as executor:
-            batch_inputs = list(tqdm(
-                executor.map(process_single_image, images),
-                total=len(images),
-                desc=f"Pre-processing {pdf_name}",
-                leave=False
-            ))
-
-        outputs_list = llm.generate(
-            batch_inputs,
-            sampling_params=sampling_params
-        )
-
-        mmd_det_path = os.path.join(OUTPUT_PATH, pdf_name.replace('.pdf', '_det.mmd'))
-        mmd_path = os.path.join(OUTPUT_PATH, pdf_name.replace('.pdf', '.mmd'))
-        pdf_out_path = os.path.join(OUTPUT_PATH, pdf_name.replace('.pdf', '_layouts.pdf'))
 
         contents_det = ''
         contents = ''
         draw_images = []
         jdx = 0
 
-        for output, img in zip(outputs_list, images):
-            content = output.outputs[0].text
+        # Process in chunks
+        for start_page in range(0, total_pages, PAGE_BATCH_SIZE):
+            end_page = min(start_page + PAGE_BATCH_SIZE, total_pages)
+            print(f"  Processing pages {start_page} to {end_page} of {total_pages}...")
 
-            if '<｜end▁of▁sentence｜>' in content: # repeat no eos
-                content = content.replace('<｜end▁of▁sentence｜>', '')
-            else:
-                if SKIP_REPEAT:
-                    continue
+            try:
+                images = pdf_to_images_chunk(pdf_file, start_page, end_page)
+            except Exception as e:
+                print(f"{Colors.RED}Failed to process chunk {start_page}-{end_page} of {pdf_file}: {e}{Colors.RESET}")
+                continue
 
-            page_num = f'\n<--- Page Split --->'
+            if not images:
+                print(f"{Colors.YELLOW}No images extracted for chunk {start_page}-{end_page}{Colors.RESET}")
+                continue
 
-            contents_det += content + f'\n{page_num}\n'
+            with ThreadPoolExecutor(max_workers=NUM_WORKERS) as executor:
+                batch_inputs = list(tqdm(
+                    executor.map(process_single_image, images),
+                    total=len(images),
+                    desc=f"    Pre-processing chunk",
+                    leave=False
+                ))
 
-            image_draw = img.copy()
+            outputs_list = llm.generate(
+                batch_inputs,
+                sampling_params=sampling_params
+            )
 
-            matches_ref, matches_images, mathes_other = re_match(content)
+            for output, img in zip(outputs_list, images):
+                content = output.outputs[0].text
 
-            result_image = process_image_with_refs(image_draw, matches_ref, jdx, pdf_base_name)
+                if '<｜end▁of▁sentence｜>' in content: # repeat no eos
+                    content = content.replace('<｜end▁of▁sentence｜>', '')
+                else:
+                    if SKIP_REPEAT:
+                        # Even if we skip repeat, we should increment jdx to keep alignment if we were depending on it?
+                        # But original logic skips the page entirely.
+                        # If we skip, jdx is not incremented, which aligns with "processed pages".
+                        # But let's stick to original logic: if skip, continue loop.
+                        continue
 
-            draw_images.append(result_image)
+                page_num = f'\n<--- Page Split --->'
 
-            for idx, a_match_image in enumerate(matches_images):
-                image_filename = f"{pdf_base_name}_{jdx}_{idx}.jpg"
-                content = content.replace(a_match_image, f'![](images/{image_filename})\n')
+                contents_det += content + f'\n{page_num}\n'
 
-            for idx, a_match_other in enumerate(mathes_other):
-                content = content.replace(a_match_other, '').replace('\\coloneqq', ':=').replace('\\eqqcolon', '=:').replace('\n\n\n\n', '\n\n').replace('\n\n\n', '\n\n')
+                image_draw = img.copy()
 
-            contents += content + f'\n{page_num}\n'
+                matches_ref, matches_images, mathes_other = re_match(content)
 
-            jdx += 1
+                result_image = process_image_with_refs(image_draw, matches_ref, jdx, pdf_base_name)
+
+                draw_images.append(result_image)
+
+                for idx, a_match_image in enumerate(matches_images):
+                    image_filename = f"{pdf_base_name}_{jdx}_{idx}.jpg"
+                    content = content.replace(a_match_image, f'![](images/{image_filename})\n')
+
+                for idx, a_match_other in enumerate(mathes_other):
+                    content = content.replace(a_match_other, '').replace('\\coloneqq', ':=').replace('\\eqqcolon', '=:').replace('\n\n\n\n', '\n\n').replace('\n\n\n', '\n\n')
+
+                contents += content + f'\n{page_num}\n'
+
+                jdx += 1
+
+            # Explicit cleanup after each chunk
+            del images
+            del batch_inputs
+            del outputs_list
+            gc.collect()
+
+        mmd_det_path = os.path.join(OUTPUT_PATH, pdf_name.replace('.pdf', '_det.mmd'))
+        mmd_path = os.path.join(OUTPUT_PATH, pdf_name.replace('.pdf', '.mmd'))
+        pdf_out_path = os.path.join(OUTPUT_PATH, pdf_name.replace('.pdf', '_layouts.pdf'))
 
         with open(mmd_det_path, 'w', encoding='utf-8') as afile:
             afile.write(contents_det)
@@ -348,10 +381,8 @@ if __name__ == "__main__":
 
         pil_to_pdf_img2pdf(draw_images, pdf_out_path)
 
-        # Cleanup to free memory
-        del images
-        del batch_inputs
-        del outputs_list
+        # Cleanup final accumulators for this PDF
         del draw_images
-        import gc
+        del contents
+        del contents_det
         gc.collect()
