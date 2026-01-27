@@ -73,7 +73,7 @@ git clone https://github.com/deepseek-ai/DeepSeek-OCR.git
 ```
 2. Conda
 ```Shell
-conda create -n deepseek-ocr python=3.12.9 -y
+conda create -n deepseek-ocr python=3.12.12 -y
 conda activate deepseek-ocr
 ```
 3. Packages
