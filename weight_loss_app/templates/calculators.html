@@ -1,0 +1,332 @@
+{% extends "base.html" %}
+
+{% block title %}Calculadoras - Emagrecimento Saudável{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h2>🧮 Calculadoras</h2>
+        <p class="subtitle">Ferramentas para planejar seu emagrecimento</p>
+    </div>
+
+    <!-- Calculadora de IMC -->
+    <div class="card">
+        <h3>📊 Calculadora de IMC</h3>
+        <p>O Índice de Massa Corporal (IMC) é uma medida que relaciona peso e altura.</p>
+        
+        <form id="imcForm" class="form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="imc_peso">Peso (kg)</label>
+                    <input type="number" id="imc_peso" name="peso" min="30" max="300" step="0.1" 
+                           value="{{ profile.peso_inicial if profile else '' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="imc_altura">Altura (m)</label>
+                    <input type="number" id="imc_altura" name="altura" min="1.0" max="2.5" step="0.01" 
+                           value="{{ (profile.altura / 100) if profile else '' }}" required>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Calcular IMC</button>
+        </form>
+
+        <div id="imcResult" class="result-box" style="display: none;">
+            <h4>Resultado:</h4>
+            <div class="result-content">
+                <p class="result-value">IMC: <span id="imcValue"></span></p>
+                <p class="result-classification">Classificação: <span id="imcClass"></span></p>
+                <p class="result-description" id="imcDesc"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calculadora de TMB e TDEE -->
+    <div class="card">
+        <h3>🔥 Calculadora de TMB e TDEE</h3>
+        <p>TMB (Taxa Metabólica Basal) é a quantidade de calorias que seu corpo queima em repouso. TDEE (Total Daily Energy Expenditure) inclui suas atividades diárias.</p>
+        
+        <form id="tmbForm" class="form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="tmb_peso">Peso (kg)</label>
+                    <input type="number" id="tmb_peso" name="peso" min="30" max="300" step="0.1" 
+                           value="{{ profile.peso_inicial if profile else '' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="tmb_altura">Altura (cm)</label>
+                    <input type="number" id="tmb_altura" name="altura" min="100" max="250" step="0.1" 
+                           value="{{ profile.altura if profile else '' }}" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="tmb_idade">Idade</label>
+                    <input type="number" id="tmb_idade" name="idade" min="10" max="120" 
+                           value="{{ profile.idade if profile else '' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="tmb_sexo">Sexo</label>
+                    <select id="tmb_sexo" name="sexo" required>
+                        <option value="">Selecione</option>
+                        <option value="M" {{ 'selected' if profile and profile.sexo == 'M' else '' }}>Masculino</option>
+                        <option value="F" {{ 'selected' if profile and profile.sexo == 'F' else '' }}>Feminino</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="tmb_atividade">Nível de Atividade</label>
+                <select id="tmb_atividade" name="nivel_atividade" required>
+                    <option value="sedentario">Sedentário (pouco ou nenhum exercício)</option>
+                    <option value="leve">Leve (exercício 1-3 dias/semana)</option>
+                    <option value="moderado">Moderado (exercício 3-5 dias/semana)</option>
+                    <option value="intenso">Intenso (exercício 6-7 dias/semana)</option>
+                    <option value="muito_intenso">Muito Intenso (exercício 2x/dia)</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Calcular TMB e TDEE</button>
+        </form>
+
+        <div id="tmbResult" class="result-box" style="display: none;">
+            <h4>Resultado:</h4>
+            <div class="result-content">
+                <p class="result-value">TMB: <span id="tmbValue"></span> calorias/dia</p>
+                <p class="result-value">TDEE: <span id="tdeeValue"></span> calorias/dia</p>
+                <p class="result-description">Seu corpo queima <span id="tdeeValueRepeat"></span> calorias por dia considerando seu nível de atividade.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calculadora de Déficit Calórico -->
+    <div class="card">
+        <h3>🎯 Calculadora de Déficit Calórico</h3>
+        <p>Descubra quantas calorias você deve consumir para emagrecer de forma saudável.</p>
+        
+        <form id="deficitForm" class="form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="def_peso">Peso (kg)</label>
+                    <input type="number" id="def_peso" name="peso" min="30" max="300" step="0.1" 
+                           value="{{ profile.peso_inicial if profile else '' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="def_altura">Altura (cm)</label>
+                    <input type="number" id="def_altura" name="altura" min="100" max="250" step="0.1" 
+                           value="{{ profile.altura if profile else '' }}" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="def_idade">Idade</label>
+                    <input type="number" id="def_idade" name="idade" min="10" max="120" 
+                           value="{{ profile.idade if profile else '' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="def_sexo">Sexo</label>
+                    <select id="def_sexo" name="sexo" required>
+                        <option value="">Selecione</option>
+                        <option value="M" {{ 'selected' if profile and profile.sexo == 'M' else '' }}>Masculino</option>
+                        <option value="F" {{ 'selected' if profile and profile.sexo == 'F' else '' }}>Feminino</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="def_atividade">Nível de Atividade</label>
+                    <select id="def_atividade" name="nivel_atividade" required>
+                        <option value="sedentario">Sedentário</option>
+                        <option value="leve">Leve</option>
+                        <option value="moderado">Moderado</option>
+                        <option value="intenso">Intenso</option>
+                        <option value="muito_intenso">Muito Intenso</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="def_objetivo">Velocidade de Emagrecimento</label>
+                    <select id="def_objetivo" name="objetivo" required>
+                        <option value="lento">Lento (0.25-0.5 kg/semana)</option>
+                        <option value="moderado">Moderado (0.5-0.75 kg/semana)</option>
+                        <option value="rapido">Rápido (0.75-1 kg/semana)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Calcular Déficit</button>
+        </form>
+
+        <div id="deficitResult" class="result-box" style="display: none;">
+            <h4>Resultado:</h4>
+            <div class="result-content">
+                <p class="result-value">TDEE: <span id="defTdee"></span> calorias/dia</p>
+                <p class="result-value">Déficit: <span id="defDeficit"></span> calorias/dia (<span id="defPercent"></span>%)</p>
+                <p class="result-value highlight">Calorias Diárias: <span id="defCalorias"></span> calorias/dia</p>
+                <p class="result-description">Perda estimada: <span id="defPerdaSemanal"></span> kg por semana</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calculadora de Peso Ideal -->
+    <div class="card">
+        <h3>⚖️ Calculadora de Peso Ideal</h3>
+        <p>Descubra seu peso ideal baseado em diferentes fórmulas científicas.</p>
+        
+        <form id="pesoIdealForm" class="form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="pi_altura">Altura (m)</label>
+                    <input type="number" id="pi_altura" name="altura" min="1.0" max="2.5" step="0.01" 
+                           value="{{ (profile.altura / 100) if profile else '' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="pi_sexo">Sexo</label>
+                    <select id="pi_sexo" name="sexo" required>
+                        <option value="">Selecione</option>
+                        <option value="M" {{ 'selected' if profile and profile.sexo == 'M' else '' }}>Masculino</option>
+                        <option value="F" {{ 'selected' if profile and profile.sexo == 'F' else '' }}>Feminino</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Calcular Peso Ideal</button>
+        </form>
+
+        <div id="pesoIdealResult" class="result-box" style="display: none;">
+            <h4>Resultado:</h4>
+            <div class="result-content">
+                <p class="result-value highlight">Peso Ideal Médio: <span id="piMedia"></span> kg</p>
+                <div class="peso-ideal-details">
+                    <p>Fórmula de Devine: <span id="piDevine"></span> kg</p>
+                    <p>Fórmula de Robinson: <span id="piRobinson"></span> kg</p>
+                    <p>Fórmula de Miller: <span id="piMiller"></span> kg</p>
+                    <p>Baseado no IMC ideal: <span id="piImc"></span> kg</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Calculadora de IMC
+document.getElementById('imcForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        peso: parseFloat(document.getElementById('imc_peso').value),
+        altura: parseFloat(document.getElementById('imc_altura').value)
+    };
+    
+    try {
+        const response = await fetch('/api/calculate-imc', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        
+        const result = await response.json();
+        
+        document.getElementById('imcValue').textContent = result.imc;
+        document.getElementById('imcClass').textContent = result.classificacao;
+        document.getElementById('imcDesc').textContent = result.descricao;
+        document.getElementById('imcResult').style.display = 'block';
+    } catch (error) {
+        alert('Erro ao calcular IMC: ' + error.message);
+    }
+});
+
+// Calculadora de TMB
+document.getElementById('tmbForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        peso: parseFloat(document.getElementById('tmb_peso').value),
+        altura: parseFloat(document.getElementById('tmb_altura').value),
+        idade: parseInt(document.getElementById('tmb_idade').value),
+        sexo: document.getElementById('tmb_sexo').value,
+        nivel_atividade: document.getElementById('tmb_atividade').value
+    };
+    
+    try {
+        const response = await fetch('/api/calculate-tmb', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        
+        const result = await response.json();
+        
+        document.getElementById('tmbValue').textContent = result.tmb;
+        document.getElementById('tdeeValue').textContent = result.tdee;
+        document.getElementById('tdeeValueRepeat').textContent = result.tdee;
+        document.getElementById('tmbResult').style.display = 'block';
+    } catch (error) {
+        alert('Erro ao calcular TMB: ' + error.message);
+    }
+});
+
+// Calculadora de Déficit
+document.getElementById('deficitForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        peso: parseFloat(document.getElementById('def_peso').value),
+        altura: parseFloat(document.getElementById('def_altura').value),
+        idade: parseInt(document.getElementById('def_idade').value),
+        sexo: document.getElementById('def_sexo').value,
+        nivel_atividade: document.getElementById('def_atividade').value,
+        objetivo: document.getElementById('def_objetivo').value
+    };
+    
+    try {
+        const response = await fetch('/api/calculate-deficit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        
+        const result = await response.json();
+        
+        document.getElementById('defTdee').textContent = result.tdee;
+        document.getElementById('defDeficit').textContent = result.deficit_calorias;
+        document.getElementById('defPercent').textContent = result.deficit_percentual;
+        document.getElementById('defCalorias').textContent = result.calorias_diarias;
+        document.getElementById('defPerdaSemanal').textContent = result.perda_semanal_kg;
+        document.getElementById('deficitResult').style.display = 'block';
+    } catch (error) {
+        alert('Erro ao calcular déficit: ' + error.message);
+    }
+});
+
+// Calculadora de Peso Ideal
+document.getElementById('pesoIdealForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        altura: parseFloat(document.getElementById('pi_altura').value),
+        sexo: document.getElementById('pi_sexo').value
+    };
+    
+    try {
+        const response = await fetch('/api/calculate-peso-ideal', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        
+        const result = await response.json();
+        
+        document.getElementById('piMedia').textContent = result.media;
+        document.getElementById('piDevine').textContent = result.devine;
+        document.getElementById('piRobinson').textContent = result.robinson;
+        document.getElementById('piMiller').textContent = result.miller;
+        document.getElementById('piImc').textContent = result.imc_ideal;
+        document.getElementById('pesoIdealResult').style.display = 'block';
+    } catch (error) {
+        alert('Erro ao calcular peso ideal: ' + error.message);
+    }
+});
+</script>
+{% endblock %}

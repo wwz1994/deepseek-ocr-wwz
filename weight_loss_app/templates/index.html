@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Emagrecimento Saudável{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h2>Dashboard</h2>
+        <p class="subtitle">Acompanhe seu progresso de emagrecimento</p>
+    </div>
+
+    {% if not profile %}
+    <!-- Formulário de Perfil Inicial -->
+    <div class="card welcome-card">
+        <h3>👋 Bem-vindo ao FitLife!</h3>
+        <p>Para começar, vamos criar seu perfil e definir suas metas.</p>
+        
+        <form id="profileForm" class="form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nome">Nome</label>
+                    <input type="text" id="nome" name="nome" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="idade">Idade</label>
+                    <input type="number" id="idade" name="idade" min="10" max="120" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="sexo">Sexo</label>
+                    <select id="sexo" name="sexo" required>
+                        <option value="">Selecione</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Feminino</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="altura">Altura (cm)</label>
+                    <input type="number" id="altura" name="altura" min="100" max="250" step="0.1" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="peso_inicial">Peso Atual (kg)</label>
+                    <input type="number" id="peso_inicial" name="peso_inicial" min="30" max="300" step="0.1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="peso_meta">Peso Meta (kg)</label>
+                    <input type="number" id="peso_meta" name="peso_meta" min="30" max="300" step="0.1" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nivel_atividade">Nível de Atividade</label>
+                    <select id="nivel_atividade" name="nivel_atividade" required>
+                        <option value="sedentario">Sedentário (pouco ou nenhum exercício)</option>
+                        <option value="leve">Leve (exercício 1-3 dias/semana)</option>
+                        <option value="moderado">Moderado (exercício 3-5 dias/semana)</option>
+                        <option value="intenso">Intenso (exercício 6-7 dias/semana)</option>
+                        <option value="muito_intenso">Muito Intenso (exercício 2x/dia)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="objetivo">Velocidade de Emagrecimento</label>
+                    <select id="objetivo" name="objetivo" required>
+                        <option value="lento">Lento (0.25-0.5 kg/semana)</option>
+                        <option value="moderado">Moderado (0.5-0.75 kg/semana)</option>
+                        <option value="rapido">Rápido (0.75-1 kg/semana)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Criar Perfil</button>
+        </form>
+    </div>
+    {% else %}
+    <!-- Dashboard com Estatísticas -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">⚖️</div>
+            <div class="stat-content">
+                <h4>Peso Atual</h4>
+                <p class="stat-value">{{ stats.peso_atual if stats else profile.peso_inicial }} kg</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-content">
+                <h4>Meta</h4>
+                <p class="stat-value">{{ stats.peso_meta if stats else profile.peso_meta }} kg</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">📉</div>
+            <div class="stat-content">
+                <h4>Peso Perdido</h4>
+                <p class="stat-value">{{ stats.peso_perdido if stats else 0 }} kg</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-content">
+                <h4>Progresso</h4>
+                <p class="stat-value">{{ stats.percentual_completo if stats else 0 }}%</p>
+            </div>
+        </div>
+    </div>
+
+    {% if stats %}
+    <div class="card">
+        <h3>Barra de Progresso</h3>
+        <div class="progress-bar-container">
+            <div class="progress-bar" style="width: {{ stats.percentual_completo }}%"></div>
+        </div>
+        <p class="progress-text">
+            Faltam {{ stats.peso_restante }} kg para atingir sua meta!
+        </p>
+    </div>
+    {% endif %}
+
+    <!-- Registro Rápido de Peso -->
+    <div class="card">
+        <h3>📝 Registrar Peso</h3>
+        <form id="quickWeightForm" class="form-inline">
+            <div class="form-group">
+                <label for="quick_peso">Peso (kg)</label>
+                <input type="number" id="quick_peso" name="peso" min="30" max="300" step="0.1" required>
+            </div>
+            <div class="form-group">
+                <label for="quick_data">Data</label>
+                <input type="date" id="quick_data" name="data" value="{{ today }}" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Adicionar</button>
+        </form>
+    </div>
+
+    <!-- Histórico Recente -->
+    {% if weight_history %}
+    <div class="card">
+        <h3>📅 Histórico Recente</h3>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Peso</th>
+                        <th>Variação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in weight_history %}
+                    <tr>
+                        <td>{{ entry.data }}</td>
+                        <td>{{ entry.peso }} kg</td>
+                        <td>
+                            {% if loop.index > 1 %}
+                                {% set diff = entry.peso - weight_history[loop.index - 2].peso %}
+                                <span class="{% if diff < 0 %}text-success{% else %}text-danger{% endif %}">
+                                    {{ "%.2f"|format(diff) }} kg
+                                </span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Dicas Motivacionais -->
+    <div class="tips-grid">
+        <div class="tip-card">
+            <h4>💧 Hidratação</h4>
+            <p>Beba pelo menos 2 litros de água por dia para manter o metabolismo ativo.</p>
+        </div>
+        <div class="tip-card">
+            <h4>🏃 Exercícios</h4>
+            <p>Combine exercícios aeróbicos com musculação para melhores resultados.</p>
+        </div>
+        <div class="tip-card">
+            <h4>😴 Sono</h4>
+            <p>Durma 7-8 horas por noite. O sono adequado é essencial para o emagrecimento.</p>
+        </div>
+        <div class="tip-card">
+            <h4>🥗 Alimentação</h4>
+            <p>Priorize alimentos naturais e evite ultraprocessados.</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Define a data de hoje
+    const today = new Date().toISOString().split('T')[0];
+    const quickDataInput = document.getElementById('quick_data');
+    if (quickDataInput) {
+        quickDataInput.value = today;
+    }
+
+    // Formulário de perfil
+    const profileForm = document.getElementById('profileForm');
+    if (profileForm) {
+        profileForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                nome: document.getElementById('nome').value,
+                idade: document.getElementById('idade').value,
+                sexo: document.getElementById('sexo').value,
+                altura: document.getElementById('altura').value,
+                peso_inicial: document.getElementById('peso_inicial').value,
+                peso_meta: document.getElementById('peso_meta').value,
+                nivel_atividade: document.getElementById('nivel_atividade').value,
+                objetivo: document.getElementById('objetivo').value
+            };
+            
+            try {
+                const response = await fetch('/api/save-profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    alert('Perfil criado com sucesso!');
+                    window.location.reload();
+                }
+            } catch (error) {
+                alert('Erro ao salvar perfil: ' + error.message);
+            }
+        });
+    }
+
+    // Formulário de registro rápido de peso
+    const quickWeightForm = document.getElementById('quickWeightForm');
+    if (quickWeightForm) {
+        quickWeightForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                peso: document.getElementById('quick_peso').value,
+                data: document.getElementById('quick_data').value
+            };
+            
+            try {
+                const response = await fetch('/api/add-weight', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    alert('Peso registrado com sucesso!');
+                    window.location.reload();
+                }
+            } catch (error) {
+                alert('Erro ao registrar peso: ' + error.message);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

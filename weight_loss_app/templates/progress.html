@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+
+{% block title %}Progresso - Emagrecimento Saudável{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h2>📈 Progresso</h2>
+        <p class="subtitle">Visualize sua evolução ao longo do tempo</p>
+    </div>
+
+    {% if not profile %}
+    <div class="card">
+        <p>Você precisa criar um perfil primeiro. <a href="{{ url_for('index') }}">Clique aqui</a> para começar.</p>
+    </div>
+    {% else %}
+
+    <!-- Gráfico de Progresso -->
+    <div class="card">
+        <h3>📊 Gráfico de Evolução</h3>
+        <canvas id="weightChart"></canvas>
+    </div>
+
+    <!-- Estatísticas Detalhadas -->
+    <div class="card" id="statsCard">
+        <h3>📋 Estatísticas</h3>
+        <div class="stats-detail-grid">
+            <div class="stat-detail">
+                <span class="stat-label">Peso Inicial:</span>
+                <span class="stat-value" id="pesoInicial">-</span>
+            </div>
+            <div class="stat-detail">
+                <span class="stat-label">Peso Atual:</span>
+                <span class="stat-value" id="pesoAtual">-</span>
+            </div>
+            <div class="stat-detail">
+                <span class="stat-label">Peso Meta:</span>
+                <span class="stat-value" id="pesoMeta">-</span>
+            </div>
+            <div class="stat-detail">
+                <span class="stat-label">Peso Perdido:</span>
+                <span class="stat-value text-success" id="pesoPerdido">-</span>
+            </div>
+            <div class="stat-detail">
+                <span class="stat-label">Peso Restante:</span>
+                <span class="stat-value" id="pesoRestante">-</span>
+            </div>
+            <div class="stat-detail">
+                <span class="stat-label">Progresso:</span>
+                <span class="stat-value" id="percentualCompleto">-</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estimativa de Tempo -->
+    <div class="card" id="timeEstimateCard" style="display: none;">
+        <h3>⏱️ Estimativa de Tempo</h3>
+        <div class="time-estimate-grid">
+            <div class="time-box">
+                <div class="time-value" id="estimativaDias">-</div>
+                <div class="time-label">Dias</div>
+            </div>
+            <div class="time-box">
+                <div class="time-value" id="estimativaSemanas">-</div>
+                <div class="time-label">Semanas</div>
+            </div>
+            <div class="time-box">
+                <div class="time-value" id="estimativaMeses">-</div>
+                <div class="time-label">Meses</div>
+            </div>
+            <div class="time-box">
+                <div class="time-value" id="dataEstimada">-</div>
+                <div class="time-label">Data Estimada</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Histórico Completo -->
+    <div class="card">
+        <h3>📅 Histórico Completo</h3>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Peso</th>
+                        <th>Variação</th>
+                        <th>Total Perdido</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                    {% if weight_history %}
+                        {% for entry in weight_history %}
+                        <tr>
+                            <td>{{ entry.data }}</td>
+                            <td>{{ entry.peso }} kg</td>
+                            <td>
+                                {% if loop.index > 1 %}
+                                    {% set diff = entry.peso - weight_history[loop.index - 2].peso %}
+                                    <span class="{% if diff < 0 %}text-success{% else %}text-danger{% endif %}">
+                                        {{ "%.2f"|format(diff) }} kg
+                                    </span>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% set total = profile.peso_inicial - entry.peso %}
+                                <span class="{% if total > 0 %}text-success{% endif %}">
+                                    {{ "%.2f"|format(total) }} kg
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center">Nenhum registro encontrado</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async function() {
+    // Carrega histórico de pesos
+    const historyResponse = await fetch('/api/get-weight-history');
+    const weightHistory = await historyResponse.json();
+    
+    if (weightHistory.length === 0) {
+        return;
+    }
+
+    // Carrega estatísticas de progresso
+    try {
+        const progressResponse = await fetch('/api/get-progress');
+        const progress = await progressResponse.json();
+        
+        // Atualiza estatísticas
+        document.getElementById('pesoInicial').textContent = progress.peso_inicial ? progress.peso_inicial + ' kg' : '-';
+        document.getElementById('pesoAtual').textContent = progress.peso_atual ? progress.peso_atual + ' kg' : '-';
+        document.getElementById('pesoMeta').textContent = progress.peso_meta ? progress.peso_meta + ' kg' : '-';
+        document.getElementById('pesoPerdido').textContent = progress.peso_perdido ? progress.peso_perdido + ' kg' : '-';
+        document.getElementById('pesoRestante').textContent = progress.peso_restante ? progress.peso_restante + ' kg' : '-';
+        document.getElementById('percentualCompleto').textContent = progress.percentual_completo ? progress.percentual_completo + '%' : '-';
+        
+        // Atualiza estimativa de tempo
+        if (progress.estimativa_tempo) {
+            const est = progress.estimativa_tempo;
+            document.getElementById('estimativaDias').textContent = est.dias;
+            document.getElementById('estimativaSemanas').textContent = est.semanas;
+            document.getElementById('estimativaMeses').textContent = est.meses;
+            document.getElementById('dataEstimada').textContent = est.data_estimada;
+            document.getElementById('timeEstimateCard').style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Erro ao carregar progresso:', error);
+    }
+
+    // Prepara dados para o gráfico
+    const labels = weightHistory.map(entry => {
+        const date = new Date(entry.data);
+        return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    });
+    
+    const weights = weightHistory.map(entry => entry.peso);
+    
+    // Linha de meta
+    const pesoMeta = {{ profile.peso_meta if profile else 0 }};
+    const metaLine = new Array(weights.length).fill(pesoMeta);
+
+    // Cria o gráfico
+    const ctx = document.getElementById('weightChart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Peso',
+                    data: weights,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    pointBackgroundColor: '#3b82f6',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                },
+                {
+                    label: 'Meta',
+                    data: metaLine,
+                    borderColor: '#10b981',
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    fill: false,
+                    pointRadius: 0,
+                    pointHoverRadius: 0
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 2,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        font: {
+                            size: 14,
+                            family: 'Inter'
+                        },
+                        padding: 15,
+                        usePointStyle: true
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    titleFont: {
+                        size: 14,
+                        family: 'Inter'
+                    },
+                    bodyFont: {
+                        size: 13,
+                        family: 'Inter'
+                    },
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + ' kg';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    ticks: {
+                        callback: function(value) {
+                            return value + ' kg';
+                        },
+                        font: {
+                            size: 12,
+                            family: 'Inter'
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: {
+                            size: 12,
+                            family: 'Inter'
+                        }
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
