@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-AR-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse Détaillée : NaOH et F2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght @400;500;700&family=Merriweather:wght @400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* 1. THE SETUP */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #e2e8f0; /* Gris clair pour l'arrière-plan du navigateur */
+            display: grid;
+            gap: 20px;
+            grid-template-columns: 1fr;
+            margin: 0;
+            min-height: 100vh;
+            padding: 20px 0;
+            place-items: center;
+        }
+
+        .slide-container {
+            align-items: center;
+            background-color: #f3f0df; /* Fond crème principal */
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: 720px;
+            justify-content: center;
+            overflow: hidden;
+            padding: 60px;
+            position: relative;
+            width: 1280px;
+        }
+        
+        /* Arrière-plan sombre pour les diapositives de titre/section */
+        .slide-container.dark-bg {
+            background-color: #005088; /* Bleu profond */
+        }
+        
+        .slide-container::before {
+            content: '';
+            height: 100%;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 100%;
+            z-index: 0;
+        }
+        
+        .slide-container > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Compteur de diapositives personnalisé */
+        .slide-counter {
+            position: absolute;
+            bottom: 20px;
+            right: 40px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 16px;
+            color: #005088; /* Bleu sur fond crème */
+            z-index: 10;
+        }
+        
+        .slide-container.dark-bg .slide-counter {
+            color: #f3f0df; /* Crème sur fond bleu */
+        }
+
+        /* 2. CONSISTENT TYPOGRAPHY (Basé sur Theme_1) */
+
+        /* Font des Titres */
+        .slide-container h1,
+        .slide-container h2,
+        .slide-container h3 {
+            color: #0B3046; /* Texte bleu très sombre */
+            font-family: 'Merriweather', serif;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .dark-bg h1, .dark-bg h2, .dark-bg h3, .dark-bg p {
+            color: #f3f0df; /* Texte crème sur fond bleu */
+        }
+
+        /* Font du Corps de texte */
+        .slide-container p,
+        .slide-container li,
+        .slide-container .subtitle,
+        .slide-container .number-label,
+        .slide-container .legend li,
+        .slide-container .chart-summary,
+        .slide-container .bar .label,
+        .slide-container th,
+        .slide-container td {
+            color: #0B3046; /* Texte bleu très sombre */
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        /* Tailles de police */
+        .slide-container h1 {
+            font-size: 70px;
+        }
+
+        .slide-container .slide-title { /* Ceci est un h2 */
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            text-align: left;
+            width: 100%;
+        }
+
+        .slide-container h3 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .slide-container p,
+        .slide-container li,
+        .slide-container .subtitle,
+        .slide-container th,
+        .slide-container td {
+            font-size: 18px;
+            line-height: 1.5;
+        }
+        
+        .slide-container .subtitle {
+            font-weight: 400;
+            font-size: 22px;
+            margin: 20px auto;
+            max-width: 80%;
+        }
+
+        .content-area {
+            align-items: center;
+            display: flex;
+            flex-grow: 1;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* 3. LAYOUT DEFINITIONS */
+        
+        /* Layout: Title_Slide */
+        .title-layout {
+            text-align: center;
+        }
+        
+        /* Layout: Section_Title */
+        .section-title-layout {
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+        }
+
+        .section-title-layout h2 {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .section-title-layout p {
+            font-size: 22px;
+            margin: 0 auto;
+            max-width: 700px;
+        }
+
+        .section-title-layout hr {
+            background-color: #11caa0; /* Sarcelle/Vert de Theme_1 */
+            border: none;
+            height: 5px;
+            margin: 30px auto;
+            width: 100px;
+        }
+
+        /* Layout: Two_Column (pour Sommaire et autres) */
+        .two-column {
+            align-items: flex-start;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            width: 100%;
+        }
+
+        .two-column ul {
+            list-style: disc;
+            margin: 0;
+            padding-left: 25px;
+        }
+
+        .two-column li {
+            margin-bottom: 15px;
+        }
+        
+        /* Layout: Rounded_Image_and_Text */
+        .rounded-image-layout .image-wrapper {
+            border-radius: 50%;
+            flex-shrink: 0;
+            height: 350px;
+            width: 350px;
+            margin: 0 auto;
+            overflow: hidden;
+            border: 5px solid #005088; /* Bordure bleue */
+        }
+        
+        .rounded-image-layout .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .rounded-image-layout.two-column {
+            align-items: center; /* Centrer verticalement */
+        }
+        
+        /* Layout: Styled_Bullet_Points */
+        .bullet-list {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .bullet-list ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .bullet-list li {
+            font-size: 20px;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-left: 40px;
+            position: relative;
+        }
+
+        .bullet-list i {
+            color: #005088; /* Bleu */
+            font-size: 24px;
+            left: 0;
+            margin-top: 5px;
+            position: absolute;
+            text-align: center;
+            top: 0;
+            width: 25px;
+        }
+
+        .bullet-list li strong {
+            color: #0B3046;
+            font-weight: 700;
+        }
+
+        /* Layout: Tiled_Text_With_Icons */
+        .tiled-content {
+            align-items: stretch;
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .tile {
+            align-items: center;
+            background-color: #ffffff; /* Blanc pur pour les tuiles */
+            border-radius: 12px;
+            border: 1px solid #d0e0e3; /* Bordure légère */
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            justify-content: flex-start;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .tile .icon {
+            color: #005088; /* Bleu */
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        /* Layout: Image_Right_Text_Left */
+        .image-wrapper {
+            border-radius: 12px;
+            height: 400px; /* Hauteur fixe pour l'image */
+            overflow: hidden;
+            width: 100%;
+            border: 1px solid #d0e0e3;
+        }
+
+        .image-wrapper img {
+            height: 100%;
+            object-fit: contain; /* 'contain' pour les schémas */
+            width: 100%;
+        }
+        
+        /* Layout: Tiled_Images */
+        .image-tile {
+            flex: 1;
+            text-align: center;
+        }
+
+        .image-tile .image-wrapper {
+            height: 225px;
+            margin-bottom: 20px;
+        }
+        
+        .image-tile .image-wrapper img {
+            object-fit: cover; /* 'cover' pour les photos */
+        }
+
+        /* Layout: Table */
+        .table-layout {
+            width: 100%;
+        }
+
+        .table-layout table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .table-layout th,
+        .table-layout td {
+            border: 1px solid #d0e0e3;
+            padding: 18px 24px;
+            text-align: left;
+        }
+
+        .table-layout th {
+            background-color: #005088; /* En-tête bleu */
+            color: #f3f0df; /* Texte crème */
+            font-size: 20px;
+            font-family: 'Merriweather', serif;
+        }
+        
+        .table-layout tr:nth-child(even) {
+            background-color: #ffffff; /* Lignes alternées */
+        }
+
+        /* Layout: Q&A (adapté pour Conclusion) */
+        .qa-layout {
+            text-align: center;
+            width: 100%;
+            align-self: center;
+        }
+
+        .qa-layout h2 {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .qa-layout p {
+            font-size: 22px;
+            max-width: 900px;
+            margin: 0 auto 40px auto;
+        }
+
+        .qa-layout .sources-list {
+            font-size: 16px;
+            list-style: none;
+            margin-top: 20px;
+            padding: 0;
+            text-align: center;
+            color: #0B3046;
+        }
+        
+        /* Styles personnalisés pour le Sommaire */
+        .summary-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        .summary-list li {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 18px;
+            color: #0B3046;
+            padding: 8px 15px;
+            border-bottom: 1px solid #d0e0e3;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+        .summary-list li:hover { /* Simule l'interactivité */
+            background-color: #ffffff;
+            color: #005088;
+            font-weight: 700;
+            cursor: default; /* Reste statique */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Diapositive 1: Page de titre -->
+    <div class="slide-container dark-bg" id="slide1">
+        <div class="title-layout">
+            <h1>Les Deux Visages de la Chimie</h1>
+            <p class="subtitle">Hydroxyde de Sodium (
+                <math display="math"><mi>NaOH</mi></math>
+            ) et Difluor (
+                <math display="math"><msub><mi>F</mi><mn>2</mn></msub></math>
+            )<br>
+            Analyse comparative de la base universelle et de l'oxydant ultime.
+            </p>
+        </div>
+        <div class="slide-counter">1 / 15</div>
+    </div>
+
+    <!-- Diapositive 2: Sommaire -->
+    <div class="slide-container" id="slide2">
+        <h2 class="slide-title">Sommaire Interactif</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div>
+                    <ul class="summary-list">
+                        <li>1. Introduction Chimique</li>
+                        <li>2. NaOH - Vue d'ensemble</li>
+                        <li>3. NaOH - Propriétés Physiques</li>
+                        <li>4. NaOH - Propriétés Chimiques</li>
+                        <li>5. NaOH - Production</li>
+                        <li>6. NaOH - Applications</li>
+                        <li>7. F2 - Vue d'ensemble</li>
+                    </ul>
+                </div>
+                <div>
+                    <ul class="summary-list">
+                        <li>8. F2 - Propriétés</li>
+                        <li>9. F2 - Réactivité</li>
+                        <li>10. F2 - Applications</li>
+                        <li>11. Sécurité & Précautions</li>
+                        <li>12. Comparaison Détaillée</li>
+                        <li>13. Conclusion & Sources</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="slide-counter">2 / 15</div>
+    </div>
+
+    <!-- Diapositive 3: Introduction Chimie -->
+    <div class="slide-container dark-bg" id="slide3">
+        <div class="section-title-layout">
+            <hr>
+            <h2>Contexte Scientifique</h2>
+            <p>Acides, Bases, et Électronégativité : Positionner le
+                <math display="math"><mi>NaOH</mi></math>
+                comme une base forte prototypique et le
+                <math display="math"><msub><mi>F</mi><mn>2</mn></msub></math>
+                comme l'élément le plus électronégatif, définissant les extrêmes de la réactivité chimique.
+            </p>
+        </div>
+        <div class="slide-counter">3 / 15</div>
+    </div>
+
+    <!-- Diapositive 4: NaOH - Présentation -->
+    <div class="slide-container" id="slide4">
+        <h2 class="slide-title">NaOH - Vue d'ensemble</h2>
+        <div class="content-area">
+            <div class="two-column rounded-image-layout">
+                <div>
+                    <div class="image-wrapper">
+                        <img src="http://googleusercontent.com/image_collection/image_retrieval/17505947083759051838" alt="Pastilles d'hydroxyde de sodium">
+                    </div>
+                </div>
+                <div>
+                    <h3>
+                        <math display="math"><mi>NaOH</mi></math>
+                        : La Soude Caustique
+                    </h3>
+                    <p>L'hydroxyde de sodium, ou soude caustique, est un composé ionique solide blanc. C'est l'une des bases les plus fortes et un pilier de l'industrie chimique mondiale, indispensable à d'innombrables processus de fabrication.</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-counter">4 / 15</div>
+    </div>
+
+    <!-- Diapositive 5: NaOH - Propriétés physiques -->
+    <div class="slide-container" id="slide5">
+        <h2 class="slide-title">NaOH : Propriétés Physiques</h2>
+        <div class="content-area">
+            <div class="bullet-list">
+                <ul>
+                    <li><i class="fa-solid fa-flask"></i><strong>Aspect:</strong> Solide blanc, cireux, disponible en pastilles, flocons ou solution.</li>
+                    <li><i class="fa-solid fa-temperature-three-quarters"></i><strong>Point de fusion:</strong> 318 °C</li>
+                    <li><i class="fa-solid fa-temperature-full"></i><strong>Point d'ébullition:</strong> 1 388 °C</li>
+                    <li><i class="fa-solid fa-droplet"></i><strong>Hygroscopique:</strong> Absorbe agressivement l'humidité (
+                        <math display="math"><msub><mi>H</mi><mn>2</mn></msub><mi>O</mi></math>
+                    ) de l'air.</li>
+                    <li><i class="fa-solid fa-water"></i><strong>Déliquescent:</strong> Se dissout dans l'humidité qu'il absorbe.</li>
+                    <li><i class="fa-solid fa-fire"></i><strong>Exothermique:</strong> Sa dissolution dans l'eau libère une quantité importante de chaleur.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="slide-counter">5 / 15</div>
+    </div>
+
+    <!-- Diapositive 6: NaOH - Propriétés chimiques -->
+    <div class="slide-container" id="slide6">
+        <h2 class="slide-title">NaOH : Propriétés Chimiques</h2>
+        <div class="content-area">
+            <div class="tiled-content">
+                <div class="tile">
+                    <div class="icon"><i class="fa-solid fa-flask-vial"></i></div>
+                    <h3>Base Forte</h3>
+                    <p>Neutralise les acides (ex: <math display="math"><mi>HCl</mi></math>) pour former un sel et de l'eau.
+                        <br>
+                        <math display="math"><mi>NaOH</mi><mo>+</mo><mi>HCl</mi><mo>&#x2192;</mo><mi>NaCl</mi><mo>+</mo><msub><mi>H</mi><mn>2</mn></msub><mi>O</mi></math>
+                    </p>
+                </div>
+                <div class="tile">
+                    <div class="icon"><i class="fa-solid fa-industry"></i></div>
+                    <h3>Réaction Amphotère</h3>
+                    <p>Réagit avec des métaux amphotères comme l'Aluminium (Al) en dégageant de l'hydrogène (
+                        <math display="math"><msub><mi>H</mi><mn>2</mn></msub></math>
+                    ).</p>
+                </div>
+                <div class="tile">
+                    <div class="icon"><i class="fa-solid fa-soap"></i></div>
+                    <h3>Saponification</h3>
+                    <p>Réagit avec les esters (matières grasses) pour former du glycérol et des carboxylates de sodium (savon).</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-counter">6 / 15</div>
+    </div>
+
+    <!-- Diapositive 7: NaOH - Production industrielle -->
+    <div class="slide-container" id="slide7">
+        <h2 class="slide-title">NaOH : Production Industrielle</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div>
+                    <h3>Le Procédé Chlore-Alcali</h3>
+                    <p>La majorité du
+                        <math display="math"><mi>NaOH</mi></math>
+                        est coproduite avec le chlore (
+                        <math display="math"><msub><mi>Cl</mi><mn>2</mn></msub></math>
+                        ) et l'hydrogène (
+                        <math display="math"><msub><mi>H</mi><mn>2</mn></msub></math>
+                        ) par l'électrolyse d'une solution de saumure (
+                        <math display="math"><mi>NaCl</mi></math>
+                        ).
+                    </p>
+                    <p><strong>Anode (+):</strong>
+                        <math display="math"><mn>2</mn><msup><mi>Cl</mi><mo>-</mo></msup><mo>&#x2192;</mo><msub><mi>Cl</mi><mn>2</mn></msup><mo>+</mo><mn>2</mn><msup><mi>e</mi><mo>-</mo></msup></math>
+                    </p>
+                    <p><strong>Cathode (-):</strong>
+                        <math display="math"><mn>2</mn><msub><mi>H</mi><mn>2</mn></msub><mi>O</mi><mo>+</mo><mn>2</mn><msup><mi>e</mi><mo>-</mo></msup><mo>&#x2192;</mo><msub><mi>H</mi><mn>2</mn></msub><mo>+</mo><mn>2</mn><msup><mi>OH</mi><mo>-</mo></msup></math>
+                    </p>
+                    <p><strong>Globale:</strong>
+                        <math display="math"><mn>2</mn><mi>NaCl</mi><mo>+</mo><mn>2</mn><msub><mi>H</mi><mn>2</mn></msub><mi>O</mi><mo>&#x2192;</mo><mn>2</mn><mi>NaOH</mi><mo>+</mo><msub><mi>Cl</mi><mn>2</mn></msub><mo>+</mo><msub><mi>H</mi><mn>2</mn></msub></math>
+                    </p>
+                </div>
+                <div>
+                    <div class="image-wrapper">
+                        <img src="http://googleusercontent.com/image_collection/image_retrieval/6130620177874928177" alt="Schéma du procédé chlore-alcali">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-counter">7 / 15</div>
+    </div>
+
+    <!-- Diapositive 8: NaOH - Applications -->
+    <div class="slide-container" id="slide8">
+        <h2 class="slide-title">NaOH : Applications Diverses</h2>
+        <div class="content-area">
+            <div class="tiled-content">
+                <div class="image-tile">
+                    <div class="image-wrapper"><img src="http://googleusercontent.com/image_collection/image_retrieval/9461324107514748074" alt="Usine de pâte à papier"></div>
+                    <p><strong>Pâte à papier</strong> (Procédé Kraft)</p>
+                </div>
+                <div class="image-tile">
+                    <div class="image-wrapper"><img src="http://googleusercontent.com/image_collection/image_retrieval/5570403624044323233" alt="Savons artisanaux"></div>
+                    <p><strong>Savons et détergents</strong> (Saponification)</p>
+                </div>
+                <div class="image-tile">
+                    <div class="image-wrapper"><img src="http://googleusercontent.com/image_collection/image_retrieval/16592318062822263612" alt="Station de traitement de l'eau"></div>
+                    <p><strong>Traitement de l'eau</strong> (Ajustement du pH)</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-counter">8 / 15</div>
+    </div>
+
+    <!-- Diapositive 9: F2 - Présentation -->
+    <div class="slide-container" id="slide9">
+        <h2 class="slide-title">F2 - Vue d'ensemble</h2>
+        <div class="content-area">
+            <div class="two-column rounded-image-layout">
+                <div>
+                    <h3>
+                        <math display="math"><msub><mi>F</mi><mn>2</mn></msub></math>
+                        : Le Difluor
+                    </h3>
+                    <p>Le difluor est un gaz diatomique (
+                        <math display="math"><msub><mi>F</mi><mn>2</mn></msub></math>
+                        ). C'est l'élément le plus électronégatif du tableau périodique, ce qui en fait l'agent oxydant le plus puissant et le plus réactif connu. Sa chimie est extrême et dangereuse.
+                    </p>
+                </div>
+                <div>
+                    <div class="image-wrapper">
+                        <img src="http://googleusercontent.com/image_collection/image_retrieval/14597072254254188555" alt="Modèle moléculaire du difluor">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-counter">9 / 15</div>
+    </div>
+
+    <!-- Diapositive 10: F2 - Propriétés -->
+    <div class="slide-container" id="slide10">
+        <h2 class="slide-title">F2 : Propriétés Physiques et Chimiques</h2>
+        <div class="content-area">
+            <div class="bullet-list">
+                <ul>
+                    <li><i class="fa-solid fa-wind"></i><strong>Aspect:</strong> Gaz jaune très pâle à température ambiante.</li>
+                    <li><i class="fa-solid fa-triangle-exclamation"></i><strong>Odeur:</strong> Âcre et irritante, extrêmement toxique.</li>
+                    <li><i class="fa-solid fa-snowflake"></i><strong>Point de fusion:</strong> -219,6 °C</li>
+                    <li><i class="fa-solid fa-temperature-low"></i><strong>Point d'ébullition:</strong> -188,1 °C</li>
+                    <li><i class="fa-solid fa-atom"></i><strong>Électronégativité:</strong> 4.0 (max sur l'échelle de Pauling).</li>
+                    <li><i class="fa-solid fa-plus-minus"></i><strong>État d'oxydation:</strong> Presque exclusivement -1 dans ses composés.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="slide-counter">10 / 15</div>
+    </div>
+
+    <!-- Diapositive 11: F2 - Réactivité -->
+    <div class="slide-container" id="slide11">
+        <h2 class="slide-title">F2 : La Réactivité Ultime</h2>
+        <div class="content-area">
+            <div class="tiled-content">
+                <div class="tile">
+                    <div class="icon"><i class="fa-solid fa-fire-flame-curved"></i></div>
+                    <h3>Hypergolique</h3>
+                    <p>Réagit violemment, souvent avec inflammation spontanée, avec presque toute la matière organique.</p>
+                </div>
+                <div class="tile">
+                    <div class="icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h3>Oxydant Universel</h3>
+                    <p>Réagit avec tous les métaux, y compris les métaux nobles comme l'or (à chaud).</p>
+                </div>
+                <div class="tile">
+                    <div class="icon"><i class="fa-solid fa-burst"></i></div>
+                    <h3>Réaction avec l'eau</h3>
+                    <p>Oxyde l'eau de manière explosive pour former de l'acide fluorhydrique (
+                        <math display="math"><mi>HF</mi></math>
+                        ) et de l'oxygène (
+                        <math display="math"><msub><mi>O</mi><mn>2</mn></msub></math>
+                        ).</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-counter">11 / 15</div>
+    </div>
+
+    <!-- Diapositive 12: F2 - Applications industrielles -->
+    <div class="slide-container" id="slide12">
+        <h2 class="slide-title">F2 : Applications Industrielles</h2>
+        <div class="content-area">
+            <div class="two-column">
+                <div>
+                    <h3>Applications Spécialisées</h3>
+                    <p>La réactivité extrême du
+                        <math display="math"><msub><mi>F</mi><mn>2</mn></msub></math>
+                        limite ses usages directs, mais il est crucial pour :
+                    </p>
+                    <ul>
+                        <li><strong>Enrichissement de l'uranium:</strong> Production d'hexafluorure d'uranium (
+                            <math display="math"><msub><mi>UF</mi><mn>6</mn></msub></math>
+                            ), un gaz utilisé dans les centrifugeuses.</li>
+                        <li><strong>Semi-conducteurs:</strong> Gravure au plasma (ex:
+                            <math display="math"><msub><mi>NF</mi><mn>3</mn></msub></math>
+                            ,
+                            <math display="math"><msub><mi>SF</mi><mn>6</mn></msub></math>
+                        ).</li>
+                        <li><strong>Polymères:</strong> Fabrication de précurseurs pour le Téflon (PTFE) et autres fluoropolymères.</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="image-wrapper">
+                        <img src="http://googleusercontent.com/image_collection/image_retrieval/15173706749753230810" alt="Cascades de centrifugeuses pour l'enrichissement de l'uranium">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-counter">12 / 15</div>
+    </div>
+
+    <!-- Diapositive 13: Sécurité et précautions -->
+    <div class="slide-container" id="slide13">
+        <h2 class="slide-title">Sécurité et Précautions</h2>
+        <div class="content-area">
+            <div class="bullet-list">
+                <ul>
+                    <li><i class="fa-solid fa-hand-holding-droplet"></i><strong>
+                        <math display="math"><mi>NaOH</mi></math>
+                        (Corrosif):</strong> Provoque de graves brûlures cutanées et oculaires. Nécessite gants, lunettes et blouse. Ne jamais ajouter d'eau au
+                        <math display="math"><mi>NaOH</mi></math>
+                        (chaleur).
+                    </li>
+                    <li style="margin-top: 40px;"><i class="fa-solid fa-biohazard"></i><strong>
+                        <math display="math"><msub><mi>F</mi><mn>2</mn></msub></math>
+                        (Toxique/Oxydant):</strong> Mortel par inhalation. Provoque des brûlures thermiques et chimiques. Nécessite des matériaux passivés (Monel, Nickel) et des EPI autonomes.
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="slide-counter">13 / 15</div>
+    </div>
+
+    <!-- Diapositive 14: Comparaison détaillée -->
+    <div class="slide-container" id="slide14">
+        <h2 class="slide-title">NaOH vs F2 : Analyse Comparative</h2>
+        <div class="content-area">
+            <div class="table-layout">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Caractéristique</th>
+                            <th>Hydroxyde de Sodium (
+                                <math display="math"><mi>NaOH</mi></math>
+                            )</th>
+                            <th>Difluor (
+                                <math display="math"><msub><mi>F</mi><mn>2</mn></msub></math>
+                            )</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Type</strong></td>
+                            <td>Base Forte, Agent réducteur</td>
+                            <td>Oxydant Ultime, Acide de Lewis</td>
+                        </tr>
+                        <tr>
+                            <td><strong>État</strong></td>
+                            <td>Solide blanc</td>
+                            <td>Gaz jaune pâle</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Danger Principal</strong></td>
+                            <td>Corrosif, Exothermique</td>
+                            <td>Toxique, Hypergolique, Oxydant</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Réactivité</strong></td>
+                            <td>Cible les protons (acides), esters</td>
+                            <td>Cible les électrons (tout)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Stockage</strong></td>
+                            <td>Acier, Plastique (PEHD)</td>
+                            <td>Métaux passivés (Monel, Nickel)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="slide-counter">14 / 15</div>
+    </div>
+
+    <!-- Diapositive 15: Conclusion et sources -->
+    <div class="slide-container" id="slide15">
+        <div class="qa-layout">
+            <h2>Conclusion</h2>
+            <p>Du
+                <math display="math"><mi>NaOH</mi></math>
+                , la bête de somme de l'industrie, au
+                <math display="math"><msub><mi>F</mi><mn>2</mn></msub></math>
+                , le prédateur alpha de la chimie, ces deux composés définissent les frontières de la production et de la sécurité. Leur maîtrise est un témoignage du génie chimique.
+            </p>
+            <h3 style="color: #0B3046;">Sources (Exemples)</h3>
+            <ul class="sources-list">
+                <li>Ullmann's Encyclopedia of Industrial Chemistry</li>
+                <li>Kirk-Othmer Encyclopedia of Chemical Technology</li>
+                <li>Fiches de sécurité INRS / ECHA</li>
+            </ul>
+        </div>
+        <div class="slide-counter">15 / 15</div>
+    </div>
+
+</body>
+</html>
