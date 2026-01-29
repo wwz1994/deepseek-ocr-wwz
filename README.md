@@ -2,6 +2,10 @@
 <!-- markdownlint-disable html -->
 <!-- markdownlint-disable no-duplicate-header -->
 
+<div align="center">
+  <b>English</b> | <a href="README.zh-TW.md">繁體中文</a> | <a href="README.es.md">Español</a>
+</div>
+
 
 <div align="center">
   <img src="assets/logo.svg" width="60%" alt="DeepSeek AI" />
