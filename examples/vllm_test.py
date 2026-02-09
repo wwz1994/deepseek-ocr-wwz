@@ -1,0 +1,27 @@
+from vllm import LLM, SamplingParams
+from vllm.model_executor.models.deepseek_ocr import NGramPerReqLogitsProcessor
+from PIL import Image
+
+llm = LLM(
+    model="DeepSeek-OCR",
+    enable_prefix_caching=False,
+    mm_processor_cache_gb=0,
+    logits_processors=[NGramPerReqLogitsProcessor]
+)
+
+image_1 = Image.open("path/to/your/image_1.png").convert("RGB")
+image_2 = Image.open("path/to/your/image_2.png").convert("RGB")
+prompt = "<image>\nFree OCR."
+
+model_input = [
+    {
+        "prompt": prompt,
+        "multi_modal_data": {"image": image_1}
+    },
+    {
+        "prompt": prompt,
+        "multi_modal_data": {"image": image_2}
+    }
+]
+
+sampling_param = SamplingParams(temperature=0.0)
