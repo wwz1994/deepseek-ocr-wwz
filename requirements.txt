@@ -4,6 +4,28 @@ PyMuPDF
 img2pdf
 einops
 easydict
-addict 
+addict
 Pillow
 numpy
+streamlit>=1.28.0
+torch>=2.0.0
+tqdm
+
+# Additional output formats
+python-docx>=0.8.11
+openpyxl>=3.0.10
+
+# Office file conversion
+python-pptx>=0.6.21
+
+# Post-processing features
+pyspellchecker>=0.7.2
+language-tool-python>=2.7.1
+
+# RAG System (Priority 1) - Local, on-device
+chromadb>=0.4.22
+sentence-transformers>=2.2.2
+requests>=2.31.0
+
+# Optional dependencies (install as needed)
+# pypandoc  # For advanced DOCX conversion

@@ -58,6 +58,7 @@
 
 ## Contents
 - [Install](#install)
+- [Streamlit Web Application](#streamlit-web-application) 🆕
 - [vLLM Inference](#vllm-inference)
 - [Transformers Inference](#transformers-inference)
   
@@ -86,6 +87,48 @@ pip install -r requirements.txt
 pip install flash-attn==2.7.3 --no-build-isolation
 ```
 **Note:** if you want vLLM and transformers codes to run in the same environment, you don't need to worry about this installation error like: vllm 0.8.5+cu118 requires transformers>=4.51.1
+
+## Streamlit Web Application
+🆕 **NEW**: We now provide a comprehensive Streamlit-based web application with drag-and-drop interface and full access to all DeepSeek-OCR features!
+
+### Quick Start
+```bash
+# Install Streamlit if not already installed
+pip install streamlit>=1.28.0
+
+# Launch the application
+./run_app.sh
+
+# Or manually:
+streamlit run app.py
+```
+
+The application will open in your browser at `http://localhost:8501`
+
+### Features
+- 📤 **Drag-and-Drop Upload**: Easy file upload for PDFs, images (PNG, JPG, JPEG)
+- 🎯 **All Resolution Modes**: Access Tiny, Small, Base, Large, and Gundam modes
+- 📝 **Multiple Prompt Templates**: Pre-configured prompts for documents, figures, OCR, and custom use cases
+- 📊 **Rich Visualizations**: View results with bounding boxes, markdown output, and annotated images
+- 💾 **Export Options**: Download markdown, annotated images, or ZIP archives for multi-page documents
+- ⚙️ **Advanced Configuration**: Full control over n-gram settings, GPU memory, concurrency, and more
+
+### Use Cases
+Perfect for:
+- 📑 Academic papers with tables and formulas
+- 📊 Presentations with charts and graphics
+- 📈 Financial reports with structured data
+- 🔬 Technical diagrams and scientific figures
+- 📝 Meeting notes and slide decks
+
+### Configuration
+The sidebar provides comprehensive settings:
+- **Resolution Modes**: Choose from Tiny (512×512) to Large (1280×1280) or Gundam (dynamic)
+- **Prompt Templates**: Document to Markdown, OCR Image, Parse Figure, Describe Image, or Custom
+- **Advanced Settings**: N-gram size, window size, GPU memory utilization, max crops, PDF DPI
+- **Performance Tuning**: Adjust concurrency and preprocessing workers for your hardware
+
+For detailed documentation, see [STREAMLIT_APP.md](STREAMLIT_APP.md)
 
 ## vLLM-Inference
 - VLLM:
