@@ -87,6 +87,10 @@ pip install flash-attn==2.7.3 --no-build-isolation
 ```
 **Note:** if you want vLLM and transformers codes to run in the same environment, you don't need to worry about this installation error like: vllm 0.8.5+cu118 requires transformers>=4.51.1
 
+>**Dependency troubleshooting:** if you hit `vllm/tokenizers/transformers` version conflicts, use one of these approaches:
+>- keep a dedicated virtual environment for the vLLM path (`DeepSeek-OCR-vllm`) and another for the transformers path (`DeepSeek-OCR-hf`), or
+>- follow the upstream vLLM nightly install section below to align dependencies in one environment.
+
 ## vLLM-Inference
 - VLLM:
 >**Note:** change the INPUT_PATH/OUTPUT_PATH and other settings in the DeepSeek-OCR-master/DeepSeek-OCR-vllm/config.py
