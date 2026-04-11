@@ -85,6 +85,7 @@ pip install vllm-0.8.5+cu118-cp38-abi3-manylinux1_x86_64.whl
 pip install -r requirements.txt
 pip install flash-attn==2.7.3 --no-build-isolation
 ```
+>**Python compatibility note:** the wheel filename contains `cp38-abi3`, but `abi3` wheels are compatible with Python 3.8+ (including Python 3.12 used above).
 **Note:** if you want vLLM and transformers codes to run in the same environment, you don't need to worry about this installation error like: vllm 0.8.5+cu118 requires transformers>=4.51.1
 
 ## vLLM-Inference
