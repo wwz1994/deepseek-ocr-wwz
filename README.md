@@ -70,6 +70,7 @@
 1. Clone this repository and navigate to the DeepSeek-OCR folder
 ```bash
 git clone https://github.com/deepseek-ai/DeepSeek-OCR.git
+cd DeepSeek-OCR
 ```
 2. Conda
 ```Shell
@@ -87,9 +88,9 @@ pip install flash-attn==2.7.3 --no-build-isolation
 ```
 **Note:** if you want vLLM and transformers codes to run in the same environment, you don't need to worry about this installation error like: vllm 0.8.5+cu118 requires transformers>=4.51.1
 
-## vLLM-Inference
+## vLLM Inference
 - VLLM:
->**Note:** change the INPUT_PATH/OUTPUT_PATH and other settings in the DeepSeek-OCR-master/DeepSeek-OCR-vllm/config.py
+>**Note:** change the INPUT_PATH/OUTPUT_PATH and other settings in `DeepSeek-OCR-master/DeepSeek-OCR-vllm/config.py`.
 ```Shell
 cd DeepSeek-OCR-master/DeepSeek-OCR-vllm
 ```
@@ -162,7 +163,7 @@ model_outputs = llm.generate(model_input, sampling_param)
 for output in model_outputs:
     print(output.outputs[0].text)
 ```
-## Transformers-Inference
+## Transformers Inference
 - Transformers
 ```python
 from transformers import AutoModel, AutoTokenizer
