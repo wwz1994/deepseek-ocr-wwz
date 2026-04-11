@@ -208,6 +208,13 @@ The current open-source model supports the following modes:
 # '先天下之忧而忧'
 ```
 
+## Limitations
+
+- OCR quality may degrade on extremely low-resolution, heavily blurred, or strongly compressed inputs.
+- Complex multi-column layouts, nested tables, and overlapping annotations can still require manual post-editing.
+- Mixed-language documents and rare scripts may need prompt tuning or fallback pipelines for best results.
+- For production use, validate outputs before downstream automation (especially for finance/legal workflows).
+
 
 ## Visualizations
 <table>
