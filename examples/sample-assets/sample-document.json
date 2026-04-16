@@ -1,0 +1,13 @@
+{
+  "title": "Project Note",
+  "fields": {
+    "owner": "Graph Team",
+    "status": "Ready for OCR Demo",
+    "reference_id": "DSK-OCR-001"
+  },
+  "checklist": [
+    "Validate single-image parsing",
+    "Compare markdown and plain OCR prompts",
+    "Save outputs for regression checks"
+  ]
+}
