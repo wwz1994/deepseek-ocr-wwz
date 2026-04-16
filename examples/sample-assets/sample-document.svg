@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560">
+  <rect width="900" height="560" fill="#ffffff"/>
+  <rect x="60" y="50" width="780" height="460" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="90" y="110" font-size="34" font-family="Arial, sans-serif" fill="#0f172a">Project Note</text>
+  <text x="90" y="160" font-size="22" font-family="Arial, sans-serif" fill="#334155">Owner: Graph Team</text>
+  <text x="90" y="200" font-size="22" font-family="Arial, sans-serif" fill="#334155">Status: Ready for OCR Demo</text>
+  <text x="90" y="255" font-size="24" font-family="Arial, sans-serif" fill="#0f172a">Checklist</text>
+  <text x="110" y="300" font-size="20" font-family="Arial, sans-serif" fill="#1e293b">- Validate single-image parsing</text>
+  <text x="110" y="335" font-size="20" font-family="Arial, sans-serif" fill="#1e293b">- Compare markdown and plain OCR prompts</text>
+  <text x="110" y="370" font-size="20" font-family="Arial, sans-serif" fill="#1e293b">- Save outputs for regression checks</text>
+  <text x="90" y="430" font-size="20" font-family="Arial, sans-serif" fill="#475569">Reference ID: DSK-OCR-001</text>
+</svg>
