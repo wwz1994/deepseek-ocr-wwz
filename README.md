@@ -40,7 +40,7 @@
 
 <h2>
 <p align="center">
-  <a href="">DeepSeek-OCR: Contexts Optical Compression</a>
+  <a href="https://arxiv.org/abs/2510.18234">DeepSeek-OCR: Contexts Optical Compression</a>
 </p>
 </h2>
 
@@ -48,7 +48,7 @@
 <img src="assets/fig1.png" style="width: 1000px" align=center>
 </p>
 <p align="center">
-<a href="">Explore the boundaries of visual-text compression.</a>       
+<a href="https://arxiv.org/abs/2510.18234">Explore the boundaries of visual-text compression.</a>       
 </p>
 
 ## Release
@@ -226,7 +226,7 @@ The current open-source model supports the following modes:
 
 We would like to thank [Vary](https://github.com/Ucas-HaoranWei/Vary/), [GOT-OCR2.0](https://github.com/Ucas-HaoranWei/GOT-OCR2.0/), [MinerU](https://github.com/opendatalab/MinerU), [PaddleOCR](https://github.com/PaddlePaddle/PaddleOCR), [OneChart](https://github.com/LingyvKong/OneChart), [Slow Perception](https://github.com/Ucas-HaoranWei/Slow-Perception) for their valuable models and ideas.
 
-We also appreciate the benchmarks: [Fox](https://github.com/ucaslcl/Fox), [OminiDocBench](https://github.com/opendatalab/OmniDocBench).
+We also appreciate the benchmarks: [Fox](https://github.com/ucaslcl/Fox), [OmniDocBench](https://github.com/opendatalab/OmniDocBench).
 
 ## Citation
 
